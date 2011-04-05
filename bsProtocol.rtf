@@ -1,0 +1,82 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+{\fonttbl\f0\froman\fcharset0 TimesNewRomanPSMT;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww15260\viewh21300\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 bsProtocol (bsP)\
+client to server:\
+	MSG (String message)	//messaging\
+	ELO (String username)	//hello to the server\
+	FIR (int x, int y)		//firing, sending coords\
+		In keeping with the OceanDisplay mapHit() (etc) methods, the format implemented in my ClientGUI callShot() code is "FIR rowCol \\r\\n".  So to fire a shot at A20, it would be "FIR A20 \\r\\n".\
+	BYE				//quitting, either before, during, or after the game ends\
+	SIZ (int size)			//size of server\
+	\
+\
+server to client:\
+	(ack ELO): 310 (first); 350 (!first); 390 (full, go away); 351 (name taken)\
+\
+	(ack FIR): 100 (miss); 150 (hit); 190 (sunk)\
+\
+	(new MSG from player): 001 "player" "message"\
+	(system MSG): 002 "message"\
+\
+	(ack SIZ): 250 (ok); 251 (not ok\'97ie, you aren't first); 252 (not ok\'97not a valid number)\
+\
+	(WON): 999 "player name"\
+	(END\'97everyone else left): 990\
+	(ack BYE): 900\
+\
+	(ship under attack): 500 (String shipname?) int coordinate\
+	(ship sunk\'97SOS): 505 (String shipname?) int coordinate\
+	(ships all dead\'97SSS\'97just guess what that stands for): 555\
+	//sorry, guys, but it makes more sense this way\
+\
+	(firing delay) 600 (firing delay in milliseconds)\
+\
+	(ship placement): 700 (ships)\
+		The format expected by the placeShips method is "ship/ship/ship", where the ships are broken into "rowCol:rowCol:rowCol".  So if you have a battleship covering from A20 to A24 and a destroyer covering from B1 to D1, it would be "A20:A21:A22:A23:A24/B1:C1:D1".\
+	//server informs player where his ships are\
+\
+	(signal beginning of game): 800\
+\
+	(OK): 250\
+	(not OK): 251\
+\
+	(on join): 220\
+\
+//ship placement\
+//see ships on login if not first\
+//other stuff\
+\
+\
+sequence of events:\
+	launch server\
+	launch client\
+	SERVER: 220 (connected and other self-identification stuff or whatever)\
+	CLIENT: ELO "username"\
+	SERVER: 310 (login; you are first, pick number of players)\
+	or\
+	SERVER: 350 (login)\
+	or\
+	SERVER: 351 (name taken)\
+	or\
+	SERVER: 390 (server full)\
+	CLIENT: SIZ x\
+	SERVER: 250 (OK)\
+	or\
+	SERVER: 251 (not ok\'97not first)\
+	or\
+	SERVER: 252 (not a number, try again)\
+	\'85\
+	SERVER: 700 (ships)\
+	SERVER: 800 (game starts)\
+	CLIENT: FIR int x, y\
+	SERVER: 100 (miss)\
+	or\
+	SERVER: 150 (hit)\
+	or\
+	SERVER: 190 (sunk)\
+	etc\
+	}
