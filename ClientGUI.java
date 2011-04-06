@@ -80,9 +80,16 @@ public class ClientGUI extends JFrame
                     nfe.printStackTrace();
                 }
                 lastTimeFired = curTime;
+				
+				Thread timerThread = new Thread(cmdPanel.getCooldownTimer(/*cmdPanel.getFireBtn()*/));
+				timerThread.start();
+				
+				
             }
             else 
             {
+//				cmdPanel.getFireBtn().setEnabled(false);
+				
                 cmdPanel.displaySystemMessage( "Firing delay in effect; please wait " + 
 											  ( ( ( lastTimeFired + firingDelay ) - curTime ) / 1000 ) + 
                                               " seconds." );
@@ -166,5 +173,4 @@ public class ClientGUI extends JFrame
     {
 		ClientGUI cg = new ClientGUI();
 	}
-
 }

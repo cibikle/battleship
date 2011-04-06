@@ -3,6 +3,7 @@ package battleship;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.GridLayout;
+//import java.
 
 public class CmdPanel extends JPanel 
 {
@@ -12,6 +13,8 @@ public class CmdPanel extends JPanel
     private JTextField systemMessage;
     private JPanel topPanel;
     private JPanel bottomPanel;
+	
+	private CooldownTimer cdt;
     
     private int clickCount;
     
@@ -38,6 +41,11 @@ public class CmdPanel extends JPanel
 	public JButton getFireBtn() 
     {
 		return fireBtn;
+	}
+	
+	public CooldownTimer getCooldownTimer()
+	{
+		return cdt;
 	}
     
     public void displaySystemMessage( String message )
@@ -94,13 +102,22 @@ public class CmdPanel extends JPanel
 	public CmdPanel( ActionListener btnListener )
     {
         setLayout( new GridLayout( 2, 1 ) );
+		
         topPanel = new JPanel();
 		topPanel.add(new JLabel("Row"));
+		
 		rowEntry = new JTextField(2);
 		topPanel.add(rowEntry);
+		
 		topPanel.add(new JLabel("Column"));
 		columnEntry = new JTextField(2);
 		topPanel.add(columnEntry);
+		
+		//
+		cdt = new CooldownTimer(5);
+		topPanel.add(cdt.getCountingField());
+		//
+		
 		fireBtn = new JButton("Fire!");
 		fireBtn.addActionListener(btnListener);
 		topPanel.add(fireBtn);
