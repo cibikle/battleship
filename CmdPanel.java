@@ -99,7 +99,7 @@ public class CmdPanel extends JPanel
         public void mouseReleased( MouseEvent e ) {}
     }
     
-	public CmdPanel( ActionListener btnListener )
+	public CmdPanel( ActionListener btnListener, int time )
     {
         setLayout( new GridLayout( 2, 1 ) );
 		
@@ -114,8 +114,7 @@ public class CmdPanel extends JPanel
 		topPanel.add(columnEntry);
 		
 		//
-		cdt = new CooldownTimer(5);
-		topPanel.add(cdt.getCountingField());
+		cdt = new CooldownTimer(time);
 		//
 		
 		fireBtn = new JButton("Fire!");

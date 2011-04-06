@@ -18,6 +18,11 @@ public class ClientGUI extends JFrame
     private int firingDelay = 5000;
     
     private boolean allShipsSunk;
+	
+	public int getFiringDelay()
+	{
+		return firingDelay;
+	}
     
 	public OceanDisplay getOceanDisplay() 
     {
@@ -159,7 +164,9 @@ public class ClientGUI extends JFrame
 		add(scorePanel, BorderLayout.NORTH);
 		oceanDisplay = new OceanDisplay( new MouseFireListener( this ) );
 		add(oceanDisplay);
-		cmdPanel = new CmdPanel(new FireListener(this));
+		
+		cmdPanel = new CmdPanel(new FireListener(this), (firingDelay/1000));
+		
 		add(cmdPanel, BorderLayout.SOUTH);
 		setSize(tileSize*OceanDisplay.columns,tileSize*OceanDisplay.rows);
 		setVisible(true);

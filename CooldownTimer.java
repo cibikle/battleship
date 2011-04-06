@@ -11,29 +11,19 @@ import javax.swing.*;
 public class CooldownTimer implements Runnable
 {
 //----------CLASS VARIABLES----------
-	private JTextField countingField;
 	private int time;
-	
 	private JButton fireBtn;
 	
 //----------CONSTRUCTOR----------
 	public CooldownTimer(int time)
 	{
 		this.time = time;
-		countingField = new JTextField("-.-");
-		countingField.setEditable(false);
 	}
 	
 //----------GET TIME----------
 	public int getTime()
 	{
 		return this.time;
-	}
-	
-//----------GET COUNTINGFIELD----------
-	public JTextField getCountingField()
-	{
-		return this.countingField;
 	}
 	
 //----------SET FIRE BTN----------
@@ -51,11 +41,11 @@ public class CooldownTimer implements Runnable
 		
 		for(int i = time; i >= 0; i--)
 		{
-			for(int j = 10; j >= 0; j--)
+			for(int j = 9; j >= 0; j--)
 			{
-				countingField.setText(i+"."+j);
+				fireBtn.setText(i+"."+j);
 				
-				countingField.repaint();
+				fireBtn.repaint();
 				
 				try
 				{
@@ -70,55 +60,40 @@ public class CooldownTimer implements Runnable
 		
 		fireBtn.setEnabled(true);
 		
-		blink();
-		blink();
+		fireBtn.setText("Fire!");
+		
+//		blink();
+//		blink();
 	}
 	
 //----------BLINK----------
 	public void blink()
 	{
-		countingField.setText("-.-");
-		countingField.repaint();
-		try
-		{
-			Thread.sleep(50);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		countingField.setText("  ");
-		countingField.repaint();
-		try
-		{
-			Thread.sleep(50);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		countingField.setText("-.-");
-		countingField.repaint();
+		fireBtn.setText("Fire!");
+		fireBtn.repaint();
 		
-/*		try
-		{
-			Thread.sleep(50);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		countingField.setText("  ");
-		countingField.repaint();
 		try
 		{
-			Thread.sleep(50);
+			Thread.sleep(80);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		countingField.setText("-.-");
-		countingField.repaint();*/
+		
+		fireBtn.setText("****");
+		fireBtn.repaint();
+		
+		try
+		{
+			Thread.sleep(80);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		fireBtn.setText("Fire!");
+		fireBtn.repaint();
 	}
 }
