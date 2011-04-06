@@ -20,7 +20,7 @@ public class CooldownTimer implements Runnable
 	public CooldownTimer(int time)
 	{
 		this.time = time;
-		countingField = new JTextField("//.//");
+		countingField = new JTextField("-.-");
 		countingField.setEditable(false);
 	}
 	
@@ -68,8 +68,50 @@ public class CooldownTimer implements Runnable
 			}
 		}
 		
-		countingField.setText("!!");
-		
 		fireBtn.setEnabled(true);
+		
+		countingField.setText("-.-");
+		countingField.repaint();
+		try
+		{
+			Thread.sleep(50);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		countingField.setText("  ");
+		countingField.repaint();
+		try
+		{
+			Thread.sleep(50);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		countingField.setText("-.-");
+		countingField.repaint();
+		
+		try
+		{
+			Thread.sleep(50);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		countingField.setText("  ");
+		countingField.repaint();
+		try
+		{
+			Thread.sleep(50);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		countingField.setText("-.-");
+		countingField.repaint();
 	}
 }

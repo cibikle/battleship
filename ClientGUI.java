@@ -89,8 +89,6 @@ public class ClientGUI extends JFrame
             }
             else 
             {
-//				cmdPanel.getFireBtn().setEnabled(false);
-				
                 cmdPanel.displaySystemMessage( "Firing delay in effect; please wait " + 
 											  ( ( ( lastTimeFired + firingDelay ) - curTime ) / 1000 ) + 
                                               " seconds." );
