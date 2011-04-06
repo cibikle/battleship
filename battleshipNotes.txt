@@ -1,0 +1,5 @@
+ClientGUI is going to require a lot of rewriting; there's a lot of stuff in there (Client-Server interaction) that should be in a different class.
+
+Server, of course, will require some work, esp. for threading/net code.
+
+Another class, possibly called Client (or just Battleship), will be needed to actually talk to the server.
