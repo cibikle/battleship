@@ -3,3 +3,5 @@ ClientGUI is going to require a lot of rewriting; there's a lot of stuff in ther
 Server, of course, will require some work, esp. for threading/net code.
 
 Another class, possibly called Client (or just Battleship), will be needed to actually talk to the server.
+
+Actually using the ServerGlobalMap, Coordinates, Ship, and ShipList classes is going to be interesting; I can't wait to find out what-all I got wrong.
