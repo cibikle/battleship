@@ -81,7 +81,8 @@ public class ClientGUI extends JFrame
                 }
                 lastTimeFired = curTime;
 				
-				Thread timerThread = new Thread(cmdPanel.getCooldownTimer(/*cmdPanel.getFireBtn()*/));
+				Thread timerThread = new Thread(cmdPanel.getCooldownTimer());
+				cmdPanel.getCooldownTimer().setFireBtn(cmdPanel.getFireBtn());
 				timerThread.start();
 				
 				

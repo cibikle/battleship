@@ -14,13 +14,13 @@ public class CooldownTimer implements Runnable
 	private JTextField countingField;
 	private int time;
 	
-//	private 
+	private JButton fireBtn;
 	
 //----------CONSTRUCTOR----------
 	public CooldownTimer(int time)
 	{
 		this.time = time;
-		countingField = new JTextField("//");
+		countingField = new JTextField("//.//");
 		countingField.setEditable(false);
 	}
 	
@@ -36,27 +36,40 @@ public class CooldownTimer implements Runnable
 		return this.countingField;
 	}
 	
+//----------SET FIRE BTN----------
+	public void setFireBtn(JButton fireBtn)
+	{
+		this.fireBtn = fireBtn;
+	}
+	
 //----------RUN----------
 	public void run()
 	{
-		System.out.println("I'm alive");
+//		System.out.println("I'm alive");
+		
+		fireBtn.setEnabled(false);
 		
 		for(int i = time; i >= 0; i--)
 		{
-			countingField.setText(i+"");
-			
-			countingField.repaint();
-			
-			try
+			for(int j = 10; j >= 0; j--)
 			{
-				Thread.sleep(1000);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
+				countingField.setText(i+"."+j);
+				
+				countingField.repaint();
+				
+				try
+				{
+					Thread.sleep(80);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		countingField.setText("!!");
+		
+		fireBtn.setEnabled(true);
 	}
 }
