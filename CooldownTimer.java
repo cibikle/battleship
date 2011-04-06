@@ -70,6 +70,13 @@ public class CooldownTimer implements Runnable
 		
 		fireBtn.setEnabled(true);
 		
+		blink();
+		blink();
+	}
+	
+//----------BLINK----------
+	public void blink()
+	{
 		countingField.setText("-.-");
 		countingField.repaint();
 		try
@@ -93,7 +100,7 @@ public class CooldownTimer implements Runnable
 		countingField.setText("-.-");
 		countingField.repaint();
 		
-		try
+/*		try
 		{
 			Thread.sleep(50);
 		}
@@ -112,6 +119,6 @@ public class CooldownTimer implements Runnable
 			e.printStackTrace();
 		}
 		countingField.setText("-.-");
-		countingField.repaint();
+		countingField.repaint();*/
 	}
 }
