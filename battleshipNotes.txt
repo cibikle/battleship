@@ -1,7 +1,9 @@
 ClientGUI is going to require a lot of rewriting; there's a lot of stuff in there (Client-Server interaction) that should be in a different class.
 
+For another thing, I'd like to change his messages to something more... better.  Succinct, professional.  Something.
+
 Server, of course, will require some work, esp. for threading/net code.
 
 Another class, possibly called Client (or just Battleship), will be needed to actually talk to the server.
 
-Actually using the ServerGlobalMap, Coordinates, Ship, and ShipList classes is going to be interesting; I can't wait to find out what-all I got wrong.
+Actually using the ServerGlobalMap, Coordinates, Ship, and ShipList classes is going to be interesting; I can't wait to find out what all I got wrong.
