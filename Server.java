@@ -49,7 +49,7 @@ public class Server
 	private static final int NAN = 252;
 	
 	private static final int ELO_FIRST = 310;
-	private static final int ELO_!FIRST = 350;
+	private static final int ELO_NOT_FIRST = 350;
 	private static final int NAME_TAKEN = 351;
 	private static final int SERVER_FULL = 390;
 	
@@ -402,7 +402,7 @@ public class Server
 		}
 		catch (Exception ex)
 		{
-			response = ERROR; 
+			response = NOT_OK; 
 			throw new Exception("Error processing targetted coordinates!");
 		}
 		
