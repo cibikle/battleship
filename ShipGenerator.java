@@ -1,4 +1,4 @@
-//ShipGeneratorSerial.java
+//ShipGenerator.java
 //COS325 Project 4: Battleship Game
 //Spring '11
 //C. Bikle
@@ -7,47 +7,47 @@ package battleship;
 
 import java.util.Random;
 
-public class ShipGeneratorSerial
+public class ShipGenerator
 {
-	//----------CLASS VARIABLES----------
+//----------CLASS VARIABLES----------
 	private static final int ROWS = 26;
 	private static final int COLS = 39;
 	private static Random ayn = new Random();
 	private int maxSize;
 	private int numOfPlayers;
 	
-	//----------CONSTRUCTOR----------
-	public ShipGeneratorSerial(int numOfPlayers, int maxSize)
+//----------CONSTRUCTOR----------
+	public ShipGenerator(int numOfPlayers, int maxSize)
 	{
 		this.numOfPlayers = numOfPlayers;
 		this.maxSize = maxSize;
 	}
 	
-	//----------GET MAX SIZE----------
+//----------GET MAX SIZE----------
 	public int getMaxSize()
 	{
 		return maxSize;
 	}
 	
-	//----------GET NUMBER OF PLAYERS----------
+//----------GET NUMBER OF PLAYERS----------
 	public int getNumOfPlayers()
 	{
 		return numOfPlayers;
 	}
 	
-	//----------SET MAX SIZE----------
+//----------SET MAX SIZE----------
 	public void getMaxSize(int mS)
 	{
 		maxSize = mS;
 	}
 	
-	//----------SET NUMBER OF PLAYERS----------
+//----------SET NUMBER OF PLAYERS----------
 	public void getNumOfPlayers(int num)
 	{
 		numOfPlayers = num;
 	}
 	
-	//----------GENERATE COORDINATES----------//returns array of Coordinates guaranteed to fit on the field of play
+//----------GENERATE COORDINATES----------//returns array of Coordinates guaranteed to fit on the field of play
 	public Coordinates[] generateCoordinates(int shipLength)
 	{
 		int x = -1;
@@ -59,7 +59,7 @@ public class ShipGeneratorSerial
 		
 		while(sectionsCheckOut < shipLength)
 		{
-			//			System.out.println("sectionsCheckOut: "+sectionsCheckOut);
+//			System.out.println("sectionsCheckOut: "+sectionsCheckOut);
 			
 			x = ayn.nextInt(COLS);
 			y = ayn.nextInt(ROWS);
@@ -97,7 +97,7 @@ public class ShipGeneratorSerial
 		return coords;
 	}
 	
-	//----------FORM A LINE----------//returns a set of coordinates stretching from the startPoint
+//----------FORM A LINE----------//returns a set of coordinates stretching from the startPoint
 	// in one of four directions
 	private Coordinates[] formALine(Coordinates startPoint, int direction, int shipLength) throws Exception
 	{
@@ -144,13 +144,13 @@ public class ShipGeneratorSerial
 		return coords;
 	}
 	
-	//----------GENERATE SHIP----------//returns a ship guaranteed to fit on the field of play
+//----------GENERATE SHIP----------//returns a ship guaranteed to fit on the field of play
 	public Ship generateShip(int size, int playerNumber)
 	{
 		return new Ship(generateCoordinates(size), playerNumber, size);
 	}
 	
-	//----------GENERATE SHIPS----------//returns a fleet of ships guaranteed to fit on the field of play and not overlap
+//----------GENERATE SHIPS----------//returns a fleet of ships guaranteed to fit on the field of play and not overlap
 	public Ship[] generateShips(int numOfPlayers)
 	{
 		Ship[] whoCalledInTheFleet = new Ship[numOfPlayers * 5];
@@ -190,40 +190,9 @@ public class ShipGeneratorSerial
 		return whoCalledInTheFleet;
 	}
 	
-	/*
-	 //----------RUN---------
-	 public void run()
-	 {
-	 
-	 }*/
-	
-	//----------MAIN----------
+//----------MAIN----------
 	public static void main(String[] args)
 	{
-		/*		System.out.println("starting");
-		 
-		 int number = 1;
-		 
-		 if(args.length > 0)
-		 number = Integer.parseInt(args[0]);
-		 
-		 Ship[] x = generateShips(number);
-		 
-		 //		System.out.println("continuing");
-		 
-		 for(int i = 0; i < x.length; i++)
-		 for(int j = 0; j < x[i].size; j++)
-		 System.out.println("ship["+i+"]: "+x[i].getCoords()[j]);
-		 
-		 ServerGlobalMap sgm = ServerGlobalMap.getServerGlobalMap();
-		 
-		 for(int i = 0; i < x.length; i++)
-		 {
-		 sgm.addShip(x[i], i);
-		 }
-		 
-		 System.out.println(sgm.reportAll());*/
-		
 		System.out.println("starting");
 		
 		//
@@ -235,11 +204,9 @@ public class ShipGeneratorSerial
 		if(args.length > 0)
 			number = Integer.parseInt(args[0]);
 		
-		ShipGeneratorSerial utopiaPlanitia = new ShipGeneratorSerial(number, 5);
+		ShipGenerator utopiaPlanitia = new ShipGenerator(number, 5);
 		
 		Ship[] x = utopiaPlanitia.generateShips(utopiaPlanitia.getNumOfPlayers());
-		
-		//		System.out.println("continuing");
 		
 		ShipList janes = ShipList.getShipList();
 		
@@ -257,30 +224,7 @@ public class ShipGeneratorSerial
 			System.out.println("**"+sgm.addShip(janes.get(i), i));
 		}
 		
-		
-		
 		System.out.println(sgm.reportAll());
-		
-		/*		 x = utopiaPlanitia.generateShips(1);
-		 
-		 int eric = janes.length();
-		 
-		 for(int i = 0; i < x.length; i++)
-		 {
-		 try
-		 {
-		 System.out.println("***"+janes.length());
-		 janes.addIgnoreException(x[i], (i+eric));
-		 }
-		 catch(Exception e)
-		 {
-		 System.out.println(e);
-		 }
-		 
-		 System.out.println(sgm.addShip(janes.get(i+eric), (i+eric)));
-		 }
-		 
-		 System.out.println(sgm.reportAll());*/
 		
 		
 		//
