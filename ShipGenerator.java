@@ -7,7 +7,7 @@ package battleship;
 
 import java.util.Random;
 
-public class ShipGenerator
+public class ShipGenerator //implements Runnable
 {
 //----------CLASS VARIABLES----------
 	private static final int ROWS = 26;
@@ -189,6 +189,13 @@ public class ShipGenerator
 		
 		return whoCalledInTheFleet;
 	}
+
+/*
+//----------RUN---------
+	public void run()
+	{
+		
+	}*/
 	
 //----------MAIN----------
 	public static void main(String[] args)
@@ -217,7 +224,7 @@ public class ShipGenerator
 		
 		System.out.println(sgm.reportAll());*/
 		
-		System.out.println("starting");
+/*		System.out.println("starting");
 		
 		int number = 1;
 		
@@ -269,6 +276,8 @@ public class ShipGenerator
 			System.out.println(sgm.addShip(janes.get(i+eric), (i+eric)));
 		}
 		
-		System.out.println(sgm.reportAll());
+		System.out.println(sgm.reportAll());*/
+		
+		
 	}
 }
