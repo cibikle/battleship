@@ -31,6 +31,14 @@ public class ShipList
 		return ref;
 	}
 	
+//----------GET SHIP LIST----------
+	public static synchronized ShipList getShipList()
+	{
+		if(ref == null)
+			ref = new ShipList();
+		return ref;
+	}
+	
 //----------CLONE----------
 	public Object clone() throws CloneNotSupportedException
 	{

@@ -165,15 +165,15 @@ public class ServerGlobalMap
 	public String reportAll()
 	{
 		String report = "";
-		char sector;
+		String sector;
 		
 		for(int i = 0; i < grid.length; i++)
 		{
 			for(int j = 0; j < grid[0].length; j++)
 			{
-				sector = toChar(this.report(new Coordinates(j,i)));
+				sector = toString(this.report(new Coordinates(j,i)));
 				
-				report += Character.toString(sector);
+				report += /*Character.toString(*/sector/*)*/;
 			}
 			report += "\n";
 		}
@@ -198,12 +198,15 @@ public class ServerGlobalMap
 		return report;
 	}
 	
-//----------TO CHAR----------
-	private char toChar(int n)
+//----------TO String----------
+	private String toString(int n)
 	{
 		String tmp = Integer.toString(n);
 		
-		return tmp.charAt(0);
+		if(tmp.charAt(0) == '-')
+			tmp = "-";
+		
+		return tmp;
 		//'-1' gets turned into a String with a length of two
 		//therefore, when charAt(0) is returned, only the dash gets returned
 	}
