@@ -5,6 +5,8 @@
 
 package battleship;
 
+//modified by C. Bikle 4/12/11
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,7 +17,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Server {
+public class Server
+{
 	private int port; 
 	private ServerSocket serverSocket; 
 	private int numPlayers; 
@@ -23,68 +26,116 @@ public class Server {
 	private ArrayList<String> playerList; 
 	private ArrayList<InetAddress> IPAddrs; 
 	private ServerGlobalMap sgm; 
-	private ShipList sList; 
+	private ShipList shipList; 
+	
+	private static final int DEFAULT_PORT = 8053;
 	
 	//
 	// Adam Clason
 	// constants for communicating response codes to the client 
 	//
-	private static final int HIT = 150;
+	private static final int PLAYER_MSG = 001;
+	private static final int SYSTEM_MSG = 002;
+	
 	private static final int MISS = 100;
-	private static final int ERROR = 251;
+	private static final int HIT = 150;
+	private static final int SUNK = 190;
+	
+	private static final int ON_JOIN = 220;
+	
+	private static final int OK = 250;
+	private static final int NOT_OK = 251;
+	
+	private static final int NAN = 252;
+	
+	private static final int ELO_FIRST = 310;
+	private static final int ELO_!FIRST = 350;
+	private static final int NAME_TAKEN = 351;
+	private static final int SERVER_FULL = 390;
+	
+	private static final int SHIP_UNDER_ATTACK = 500;
+	private static final int SHIP_SUNK = 505;
+	private static final int ALL_SHIPS_SUNK = 555;
+	
+	private static final int FIRING_DELAY_CODE = 600;
+	
+	private static final int SHIP_PLACEMENT = 700;
+	
+	private static final int BEGIN = 800;
+	
+	private static final int BYE = 900;
+	private static final int END = 990;
+	private static final int WON = 999;
+	
 
-	Server() { 
-		// default constructor
-		port = 8053; 
+//----------DEFAULT CONSTRUCTOR----------
+	Server()
+	{
+		port = DEFAULT_PORT; 
 		
-		numPlayers = 0; serverLimit = 0; 
+		numPlayers = 0;
+		serverLimit = 0; 
 		playerList = new ArrayList<String>(); 
 		IPAddrs = new ArrayList<InetAddress>(); 
 		sgm = ServerGlobalMap.getServerGlobalMap(); 
-		sList = ShipList.getShipList(5);
+		shipList = ShipList.getShipList(5);
 		
-		try {
+		try
+		{
 			serverSocket = new ServerSocket(port);
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		} 
 	}
 	
-	Server(int port) { 
-		// alternative constructor
+//----------ALTERNATIVE CONSTRUCTOR----------
+	Server(int port)
+	{
 		this.port = port; 
 		
-		numPlayers = 0; serverLimit = 0; 
+		numPlayers = 0;
+		serverLimit = 0; 
 		playerList = new ArrayList<String>(); 
 		IPAddrs = new ArrayList<InetAddress>(); 
 		sgm = ServerGlobalMap.getServerGlobalMap(); 
-		sList = ShipList.getShipList(5);
+		shipList = ShipList.getShipList(5);
 		
-		try {
+		try
+		{
 			serverSocket = new ServerSocket(port);
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		} 
 	}
 	
 	// awkward implementation of a copy constructor
-	Server(Server s) { 
+	Server(Server s)
+	{ 
 		this.port = s.port;
 		this.serverSocket = s.serverSocket; 
 		this.numPlayers = s.numPlayers; 
 		this.playerList = s.playerList; 
 		this.sgm = s.sgm; 
-		this.sList = s.sList; 
+		this.shipList = s.shipList; 
 	}
 	
 	// this might have to be threaded so
 	// that multiple clients can connect
 	// but the variables will need to be locked
-	// and somehow protected. 
-	public void runServer() throws IOException {
+	// and somehow protected.
+	
+//----------RUN SERVER----------
+	public void runServer() throws IOException
+	{
 		System.out.println(port);
 		System.out.println("Server running on port "+port);
-		while ( true ) { 
+		
+		while(true)
+		{ 
 			Socket connectionSocket = serverSocket.accept(); 
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
@@ -93,7 +144,8 @@ public class Server {
 			// we should write the IP address to match the name 
 			
 			InetAddress ip = connectionSocket.getInetAddress(); 
-			if ( !ipInSystem(ip) ) {
+			if(!ipInSystem(ip))
+			{
 				IPAddrs.add(ip);
 			}
 			
@@ -103,14 +155,16 @@ public class Server {
 			
 			String read = inFromClient.readLine(); 
 			
-			while ( read != null ) {
+			while(read != null)
+			{
 				int response = processMessage(read); 
 				System.out.println("response: " + Integer.toString(response));
 				outToClient.writeBytes(Integer.toString(response) + '\n'); 
 				read = inFromClient.readLine(); 
 			}
 			
-			if ( this.numPlayers == this.serverLimit ) { 
+			if(this.numPlayers == this.serverLimit)
+			{ 
 				outToClient.writeBytes("700" + '\n');
 				outToClient.writeBytes("800" + '\n');
 			}
@@ -144,92 +198,125 @@ public class Server {
 			}
 			
 			Ship s = new Ship(c[i], i, c[i].length);
-			this.sList.add(s, i); 
+			this.shipList.add(s, i); 
  		}
 		
-		for ( int i = 0; i < sList.length(); i++ ) {
-			this.sgm.addShip(sList.get(i), i); 
+		for ( int i = 0; i < shipList.length(); i++ ) {
+			this.sgm.addShip(shipList.get(i), i); 
 		}
 	}
 	
-	private boolean ipInSystem(InetAddress ip) { 
-		for ( InetAddress nIp : IPAddrs ) {
-			if ( nIp.equals(ip) ) {
+//----------IP IN SYSTEM----------
+	private boolean ipInSystem(InetAddress ip)
+	{ 
+		for(InetAddress nIp : IPAddrs)
+		{
+			if(nIp.equals(ip))
+			{
 				return true; 
 			}
 		}
+		
 		return false; 
 	}
 	
-	
-	private int msg(String msg) {
+//----------MSG----------
+	private int msg(String msg)
+	{
 		String remainder = msg.substring(3, msg.length()); 
-		if ( remainder.indexOf("|") != -1 ) {
+		
+		if(remainder.indexOf("|") != -1)
+		{
 			String text = remainder.substring(remainder.indexOf("|")+1, remainder.length());
 			System.out.println("001 " + text); 	
 			return 001; 
 		}
-		return 251;
 		
+		return 251;
 	}
 	
-	private int elo(String msg) {
+//----------ELO----------
+	private int elo(String msg)
+	{
 		String name = msg.substring(3, msg.length());
-		boolean foundName = false; 
-		for ( String p : playerList ) {
-			if ( p.equals(name) ) {
+		boolean foundName = false;
+		
+		for(String p : playerList)
+		{
+			if(p.equals(name))
+			{
 				foundName = true; 
 			}
 		}
 		
-		if ( foundName != true ) { 
-			if ( numPlayers == 0 ) { 
+		if(foundName != true)
+		{ 
+			if(numPlayers == 0)
+			{ 
 				playerList.add(name);
 				System.out.println("310 Added first player " + name + ". Send SIZ");
 				numPlayers = 1; 
-				try {
+				
+				try
+				{
 					System.out.println(playerList.size());
 					placeShips(playerList.size());
-				} catch (ShipOutOfBoundsException e) {
+				}
+				catch (ShipOutOfBoundsException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (ShipOverlapException e) {
+				}
+				catch (ShipOverlapException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
+				}
+				
 				System.out.println(this.sgm.reportAll());
+				
 				return 310; // ELO in digits :)
 			}
-			
-			else { 
-				if ( playerList.size() == serverLimit ) { 
+			else 
+			{ 
+				if(playerList.size() == serverLimit)
+				{ 
 					System.out.println("390 Server full"); 
 					return 390;
 				}
-			
-				else { 
+				else
+				{ 
 					playerList.add(name);
 					numPlayers++; 
 					System.out.println("350 Added player " + name);
-					try {
+					
+					try
+					{
 						placeShips(playerList.size());
-					} catch (ShipOutOfBoundsException e) {
+					}
+					catch (ShipOutOfBoundsException e)
+					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (ShipOverlapException e) {
+					}
+					catch (ShipOverlapException e)
+					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 
+					}
+					
 					System.out.println(this.sgm.reportAll());
+					
 					return 350;
 				}
 			}
 		}
-		
-		else if ( foundName == true ) {
+		else if(foundName == true)
+		{
 			System.out.println("351 Username " + name + " already taken");
 			return 351; 
-		}	
+		}
+		
 		return 251; 
 	}
 	
@@ -242,10 +329,13 @@ public class Server {
 	 * @param msg
 	 * @return whether or not a ship was hit. 
 	 */
-	private int fir(String msg) throws Exception {
+//----------FIR----------
+	private int fir(String msg) throws Exception
+	{
 		int response = 251;
 		
-		try {
+		try
+		{
 			//
 			// Get the row and column string from the fire command 
 			//
@@ -276,8 +366,9 @@ public class Server {
 			// Otherwise, the number returned is the index in 
 			// the array of ships where the intersected ship is located.
 			//
-			if (reportIndicator >= 0) {
-				Ship hitShip = sList.get(reportIndicator);
+			if(reportIndicator >= 0)
+			{
+				Ship hitShip = shipList.get(reportIndicator);
 				//
 				// Get the hit ships coordinates. We need to do this 
 				// in order to check if that coordinate has already been hit.
@@ -286,25 +377,31 @@ public class Server {
 				//
 				// Find which coordinate was hit 
 				//
-				for(int i = 0; i < hitShipCoords.length; i++) {
+				for(int i = 0; i < hitShipCoords.length; i++)
+				{
 					// 
 					// Check if the ship is already sunk. If not, see
 					// if the coordinate is a hit (meaning that the coordinates
 					// overlap and the coordinate has not already been hit.
 					//
-					if ((!hitShip.isSunk) && hitShipCoords[i].isHit(coord)) {
+					if((!hitShip.isSunk) && hitShipCoords[i].isHit(coord))
+					{
 						response = HIT; 
 						hitShip.checkSunk();
-						if (hitShip.isSunk() == true) {
+						if(hitShip.isSunk() == true)
+						{
 							// notify the client whose ship was sunk
 						}
 					}
 				}
-			} else {
+			}
+			else
+			{
 				response = MISS; 
 			}
-			
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			response = ERROR; 
 			throw new Exception("Error processing targetted coordinates!");
 		}
@@ -312,41 +409,47 @@ public class Server {
 		return response; 
 	}
 	
-	public static void main(String[] args) throws Exception {
-		Server svr = new Server(); 
-		int val = svr.fir("FIR A20"); 
-	}
-	
-	private int bye(String msg) {
+//----------BYE----------
+	private int bye(String msg)
+	{
 		// TODO: remove this user's ships
 		// and inform other users of the change
 		return 900;
 	}
 	
-	private int siz(String msg) {
+//----------SIZ----------
+	private int siz(String msg)
+	{
 		System.out.println("size: " + this.serverLimit);
-		if ( numPlayers == 1 ) { 
-			try {
+		
+		if(numPlayers == 1)
+		{ 
+			try
+			{
 				int size = Integer.parseInt(msg.substring(3, msg.length()).trim());
 				this.serverLimit = size; 
 				System.out.println("250 OK");
 				return 250; 
-			} catch ( Exception e ) { 
+			}
+			catch(Exception e)
+			{ 
 				System.out.println("252 Not a valid number"); 
 				return 252;
 			}
-			
 		}
-		else { 
+		else
+		{ 
 			System.out.println("251 Not First Player");
 			return 251; 
 		}
 	}
 	
 	
-	
-	public int processMessage(String msg) { 
-		if ( msg.length() < 3 ) { 
+//----------PROCESS MESSAGE----------
+	public int processMessage(String msg)
+	{ 
+		if(msg.length() < 3)
+		{ 
 			System.err.println("251 Message too short"); 
 			return 251; 
 		}
@@ -355,31 +458,44 @@ public class Server {
 		// battleship protocol (bsProtocol for short)
 		
 		String m = msg.substring(0, 3);
-		if ( m.equalsIgnoreCase("ELO") ) { 
+		
+		if(m.equalsIgnoreCase("ELO"))
+		{ 
 			return elo(msg); 
 		}
 		
-		if ( m.equalsIgnoreCase("SIZ") ) {
+		if(m.equalsIgnoreCase("SIZ"))
+		{
 			return siz(msg);
 		}
 		
-		if ( m.equalsIgnoreCase("BYE") ) {
+		if(m.equalsIgnoreCase("BYE"))
+		{
 			// TODO: disconnect particular client 
 			// and remove their ships
 			// I don't see a remove ship option
 			return bye(msg);
 		}
 		
-		if ( m.equalsIgnoreCase("MSG") ) { 
+		if(m.equalsIgnoreCase("MSG"))
+		{ 
 			return msg(msg);
 		}
 		
-		if ( m.equalsIgnoreCase("FIR") ) {
+		if(m.equalsIgnoreCase("FIR"))
+		{
 			// someone else can handle this I think
 		}
 		
 		// something went bad wrong
 		return 251; 
+	}
+	
+//----------MAIN----------
+	public static void main(String[] args) throws Exception
+	{
+		Server svr = new Server(); 
+		int val = svr.fir("FIR A20"); 
 	}
 	
 	/*
