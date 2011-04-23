@@ -264,6 +264,8 @@ public class Client
 		String[] parsedArgs = parseArgs(toArrayList(args));
 		
 		Client player = new Client(parsedArgs);
+		
+		
 /*		if ( args.length > 0 )
 		{
 //			int portNum = 0;
