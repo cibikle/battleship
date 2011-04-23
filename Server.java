@@ -149,6 +149,10 @@ public class Server
 				IPAddrs.add(ip);
 			}
 			
+			//
+			outToClient.writeBytes(Integer.toString(ON_JOIN) + '\n');
+			//
+			
 			// we read as a series of bytes -- for our purposes a String
 			// and send the response message -- for our purposes an int
 			// back to the client as an String
@@ -492,13 +496,13 @@ public class Server
 	}
 	
 //----------MAIN----------
-	public static void main(String[] args) throws Exception
+/*	public static void main(String[] args) throws Exception
 	{
 		Server svr = new Server(); 
 		int val = svr.fir("FIR A20"); 
-	}
+	}*/
 	
-	/*
+	/**/
 	 public static void main(String args[]) throws IOException {
 		 System.out.println("starting");
 		 Server s = new Server();
@@ -518,5 +522,5 @@ public class Server
 
 		 s.runServer();
 	}
-	*/
+	/**/
 }

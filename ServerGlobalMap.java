@@ -207,8 +207,6 @@ public class ServerGlobalMap
 			tmp = "-";
 		
 		return tmp;
-		//'-1' gets turned into a String with a length of two
-		//therefore, when charAt(0) is returned, only the dash gets returned
 	}
 	
 //----------SHIP COORDS IS NULL----------
@@ -223,63 +221,6 @@ public class ServerGlobalMap
 //----------MAIN----------
 	public static void main(String[] args)
 	{
-		
-/*		ServerGlobalMap sgm = getServerGlobalMap();
-		
-		ShipList janesList = ShipList.getShipList(4);
-		
-		Coordinates[][] shipCoords = new Coordinates[4][];
-		
-		
-		for(int i = 0; i < shipCoords.length; i++)
-		{
-			if(i < 2)
-			{
-				shipCoords[i] = new Coordinates[4];
-			}
-			else
-			{
-				shipCoords[i] = new Coordinates[1];
-			}
-		}
-		
-
-		
-		for(int i = 0; i < shipCoords[0].length; i++)
-		{
-			shipCoords[0][i] = new Coordinates(i, 9);
-		}
-		
-		for(int i = 0; i < shipCoords[1].length; i++)
-		{
-			shipCoords[1][i] = new Coordinates(9, i);
-		}
-		
-		for(int i = 0; i < shipCoords[2].length; i++)
-		{
-			shipCoords[2][i] = new Coordinates(0,1);
-		}
-		
-		for(int i = 0; i < shipCoords[3].length; i++)
-		{
-			shipCoords[3][i] = new Coordinates(19, i);
-		}
-		
-		//
-		
-		for(int i = 0; i < janesList.length(); i++)
-		{
-			janesList.addIgnoreException(new Ship(shipCoords[i], i, shipCoords[i].length), i);
-		}
-		
-		for(int i = 0; i < janesList.length(); i++)
-		{
-			sgm.addShip(janesList.get(i), i);
-		}
-		
-		System.out.println(sgm.reportAll());*/
-		
-		
 		/*
 		 get servergolbalmap
 		 
