@@ -18,7 +18,7 @@ public class Client
 	private String remoteHostName;
 	private String localHostName;
 	
-	private Socket clientSocket;
+	private static Socket clientSocket;
 	
 	private ClientGUI cgui;
 	
@@ -27,17 +27,21 @@ public class Client
 	private BufferedReader inFromServer;
 	
 //----------CONSTRUCTOR----------
-	public Client(String[] args)
+	public Client(String[] processedArgs)
 	{
 		this.inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		
 		try
 		{
-			if(!setRemoteHostName(args[0]));
-			   throw new Exception();
+			if(!setRemoteHostName(processedArgs[0]))
+			{
+				throw new Exception();
+			}
 		}
 		catch(Exception e)
 		{
+			System.out.println(processedArgs[0]);
+			
 			e.printStackTrace();
 			
 			infoPrompt(4);
@@ -45,11 +49,13 @@ public class Client
 		
 		try
 		{
-			if(!setPortNumber(args[1]));
+			if(!setPortNumber(processedArgs[1]))
 				throw new Exception();
 		}
 		catch(Exception e)
 		{
+			System.out.println(processedArgs[1]);
+			
 			e.printStackTrace();
 			
 			infoPrompt(5);
@@ -57,24 +63,16 @@ public class Client
 		
 		try
 		{
-			if(!setUserName(args[2]))
+			if(!setUserName(processedArgs[2]))
 			   throw new Exception();
 		}
 		catch(Exception e)
 		{
+			System.out.println(processedArgs[2]);
+			
 			e.printStackTrace();
 			
 			infoPrompt(6);
-		}
-		
-		try
-		{
-			this.remoteHostName = args[0];
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			System.exit(4);
 		}
 		
 		try
@@ -133,19 +131,25 @@ public class Client
 //----------PARSE ARGS----------
 	private static String[] parseArgs(ArrayList<String> rawArgs)
 	{
-		String[] processedArgs = new String[3];
+/*		for(String s : rawArgs)
+			System.out.println(s);*/
+		
+		String[] processedArgs = new String[rawArgs.size()];
 		
 		if(rawArgs.isEmpty())
 			return null;
 		
 		if(rawArgs.contains("-h"))
-			processedArgs[0] = rawArgs.get((rawArgs.indexOf("-u")+1));
+			processedArgs[0] = rawArgs.get((rawArgs.indexOf("-h")+1));
 		
 		if(rawArgs.contains("-p"))
 			processedArgs[1] = rawArgs.get((rawArgs.indexOf("-p")+1));
 		
 		if(rawArgs.contains("-u"))
-			processedArgs[3] = rawArgs.get((rawArgs.indexOf("-u")+1));
+			processedArgs[2] = rawArgs.get((rawArgs.indexOf("-u")+1));
+		
+/*		for(String s : processedArgs)
+			System.out.println(s);*/
 		
 		return processedArgs;
 	}
@@ -157,7 +161,7 @@ public class Client
 		
 		for(int i = 0; i < arhs.length; i++)
 		{
-			als.add(arhs[0]);
+			als.add(arhs[i]);
 		}
 		
 		return als;
@@ -222,8 +226,11 @@ public class Client
 		}
 		catch(Exception e)
 		{
+			System.out.println(e+"\nset host name s: "+s);
 			return false;
 		}
+		
+		System.out.println("**set host name s: "+s);
 		
 		return true;
 	}
@@ -265,7 +272,7 @@ public class Client
 		
 		Client player = new Client(parsedArgs);
 		
-		
+		clientSocket.close();
 /*		if ( args.length > 0 )
 		{
 //			int portNum = 0;
