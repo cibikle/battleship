@@ -26,6 +26,8 @@ public class Client
 	private DataOutputStream outToServer;
 	private BufferedReader inFromServer;
 	
+	private int FIRING_DELAY;
+	
 //----------CONSTRUCTOR----------
 	public Client(String[] processedArgs)
 	{
@@ -226,11 +228,8 @@ public class Client
 		}
 		catch(Exception e)
 		{
-			System.out.println(e+"\nset host name s: "+s);
 			return false;
 		}
-		
-		System.out.println("**set host name s: "+s);
 		
 		return true;
 	}
@@ -263,6 +262,29 @@ public class Client
 		}
 		
 		return true;
+	}
+	
+//----------RUN----------
+	private void run()
+	{
+		String input = "";
+		
+		try
+		{
+			input = inFromServer.readLine();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+			System.exit(7);
+		}
+		
+		if()
+		
+		while(true)
+		{
+			
+		}
 	}
 	
 //----------MAIN----------

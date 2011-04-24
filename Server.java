@@ -34,38 +34,38 @@ public class Server
 	// Adam Clason
 	// constants for communicating response codes to the client 
 	//
-	private static final int PLAYER_MSG = 001;
-	private static final int SYSTEM_MSG = 002;
+	private static final String PLAYER_MSG = "001";
+	private static final String SYSTEM_MSG = "002";
 	
-	private static final int MISS = 100;
-	private static final int HIT = 150;
-	private static final int SUNK = 190;
+	private static final String MISS = "100";
+	private static final String HIT = "150";
+	private static final String SUNK = "190";
 	
-	private static final int ON_JOIN = 220;
+	private static final String ON_JOIN = "220";
 	
-	private static final int OK = 250;
-	private static final int NOT_OK = 251;
+	private static final String OK = "250";
+	private static final String NOT_OK = "251";
 	
-	private static final int NAN = 252;
+	private static final String NAN = "252";
 	
-	private static final int ELO_FIRST = 310;
-	private static final int ELO_NOT_FIRST = 350;
-	private static final int NAME_TAKEN = 351;
-	private static final int SERVER_FULL = 390;
+	private static final String ELO_FIRST = "310";
+	private static final String ELO_NOT_FIRST = "350";
+	private static final String NAME_TAKEN = "351";
+	private static final String SERVER_FULL = "390";
 	
-	private static final int SHIP_UNDER_ATTACK = 500;
-	private static final int SHIP_SUNK = 505;
-	private static final int ALL_SHIPS_SUNK = 555;
+	private static final String SHIP_UNDER_ATTACK = "500";
+	private static final String SHIP_SUNK = "505";
+	private static final String ALL_SHIPS_SUNK = "555";
 	
-	private static final int FIRING_DELAY_CODE = 600;
+	private static final String FIRING_DELAY_CODE = "600";
 	
-	private static final int SHIP_PLACEMENT = 700;
+	private static final String SHIP_PLACEMENT = "700";
 	
-	private static final int BEGIN = 800;
+	private static final String BEGIN = "800";
 	
-	private static final int BYE = 900;
-	private static final int END = 990;
-	private static final int WON = 999;
+	private static final String BYE = "900";
+	private static final String END = "990";
+	private static final String WON = "999";
 	
 
 //----------DEFAULT CONSTRUCTOR----------
@@ -150,7 +150,7 @@ public class Server
 			}
 			
 			//
-			outToClient.writeBytes(Integer.toString(ON_JOIN) + '\n');
+			outToClient.writeBytes((ON_JOIN) + '\n');
 			//
 			
 			// we read as a series of bytes -- for our purposes a String
@@ -334,9 +334,9 @@ public class Server
 	 * @return whether or not a ship was hit. 
 	 */
 //----------FIR----------
-	private int fir(String msg) throws Exception
+	private String fir(String msg) throws Exception
 	{
-		int response = 251;
+		String response = NOT_OK;
 		
 		try
 		{
