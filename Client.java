@@ -28,6 +28,11 @@ public class Client
 	
 	private int FIRING_DELAY;
 	
+	private final int HOST_INFO_PROMPT_CODE = 4;
+	private final int PORT_INFO_PROMPT_CODE = 5;
+	private final int USERNAME_INFO_PROMPT_CODE = 6;
+	private final int PROMPT_COMPLETE_CODE = -1;
+	
 //----------CONSTRUCTOR----------
 	public Client(String[] processedArgs)
 	{
@@ -42,11 +47,11 @@ public class Client
 		}
 		catch(Exception e)
 		{
-			System.out.println(processedArgs[0]);
+//			System.out.println(processedArgs[0]);
 			
 			e.printStackTrace();
 			
-			infoPrompt(4);
+			infoPrompt(HOST_INFO_PROMPT_CODE);
 		}
 		
 		try
@@ -56,11 +61,11 @@ public class Client
 		}
 		catch(Exception e)
 		{
-			System.out.println(processedArgs[1]);
+//			System.out.println(processedArgs[1]);
 			
 			e.printStackTrace();
 			
-			infoPrompt(5);
+			infoPrompt(PORT_INFO_PROMPT_CODE);
 		}
 		
 		try
@@ -70,11 +75,11 @@ public class Client
 		}
 		catch(Exception e)
 		{
-			System.out.println(processedArgs[2]);
+//			System.out.println(processedArgs[2]);
 			
 			e.printStackTrace();
 			
-			infoPrompt(6);
+			infoPrompt(USERNAME_INFO_PROMPT_CODE);
 		}
 		
 		try
@@ -110,6 +115,8 @@ public class Client
 		}
 		
 		System.out.println("ready");
+		
+		run();
 	}
 
 //----------CREATE SOCKET----------
@@ -117,14 +124,27 @@ public class Client
 	{
 		Socket sock = null;
 		
-		try
+		while(true)
 		{
-			sock = new Socket(remoteHostName, port);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(1);
+			try
+			{
+				sock = new Socket(remoteHostName, port);
+				
+				break;
+			}
+			catch(UnknownHostException e)
+			{
+				e.printStackTrace();
+				
+				remoteHostName = infoPrompt(HOST_INFO_PROMPT_CODE);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				
+				remoteHostName = infoPrompt(HOST_INFO_PROMPT_CODE);
+				port = Integer.parseInt(infoPrompt(PORT_INFO_PROMPT_CODE));
+			}
 		}
 		
 		return sock;
@@ -141,14 +161,35 @@ public class Client
 		if(rawArgs.isEmpty())
 			return null;
 		
-		if(rawArgs.contains("-h"))
-			processedArgs[0] = rawArgs.get((rawArgs.indexOf("-h")+1));
+		try
+		{
+			if(rawArgs.contains("-h"))
+				processedArgs[0] = rawArgs.get((rawArgs.indexOf("-h")+1));
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+		}
+			
+		try
+		{
+			if(rawArgs.contains("-p"))
+				processedArgs[1] = rawArgs.get((rawArgs.indexOf("-p")+1));
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+		}
 		
-		if(rawArgs.contains("-p"))
-			processedArgs[1] = rawArgs.get((rawArgs.indexOf("-p")+1));
-		
-		if(rawArgs.contains("-u"))
-			processedArgs[2] = rawArgs.get((rawArgs.indexOf("-u")+1));
+		try
+		{
+			if(rawArgs.contains("-u"))
+				processedArgs[2] = rawArgs.get((rawArgs.indexOf("-u")+1));
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+		}
 		
 /*		for(String s : processedArgs)
 			System.out.println(s);*/
@@ -170,16 +211,20 @@ public class Client
 	}
 	
 //----------INFO PROMPT----------
-	private void infoPrompt(int code)
+	private String infoPrompt(int code)
 	{
-		while(code == 4)//hostname
+		String input = null;
+		
+		while(code == HOST_INFO_PROMPT_CODE)//hostname
 		{
 			System.out.print("Please enter a valid hostname: ");
 			
 			try
 			{
-				if(setRemoteHostName(inFromUser.readLine()))
-					return;
+				input = inFromUser.readLine();
+				
+				if(setRemoteHostName(input))
+					code = PROMPT_COMPLETE_CODE;
 			}
 			catch (Exception e)
 			{
@@ -187,14 +232,16 @@ public class Client
 			}
 		}
 			
-		while(code == 5)//port
+		while(code == PORT_INFO_PROMPT_CODE)//port
 		{
 			System.out.print("Please enter a valid port number: ");
 			
 			try
 			{
-				if(setPortNumber(inFromUser.readLine()))
-					return;
+				input = inFromUser.readLine();
+				
+				if(setPortNumber(input))
+					code = PROMPT_COMPLETE_CODE;
 			}
 			catch (Exception e)
 			{
@@ -202,26 +249,35 @@ public class Client
 			}
 		}
 			
-		while(code == 6)//username
+		while(code == USERNAME_INFO_PROMPT_CODE)//username
 		{
 			System.out.print("Please enter a valid username: ");
 			
 			
 			try
 			{
-				if(setUserName(inFromUser.readLine()))
-					return;
+				input = inFromUser.readLine();
+				
+				if(setUserName(input))
+					code = PROMPT_COMPLETE_CODE;
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
 		}
+		
+		return input;
+		
+		//consider revising to use switch
 	}
 	
 //----------SET HOST NAME----------
 	private boolean setRemoteHostName(String s)
 	{
+		if(s == null)
+			return false;
+		
 		try
 		{
 			this.remoteHostName = s;
@@ -237,6 +293,9 @@ public class Client
 //----------SET PORT NUMBER----------
 	private boolean setPortNumber(String s)
 	{
+		if(s == null)
+			return false;
+		
 		try
 		{
 			this.port = Integer.parseInt(s);
@@ -252,6 +311,9 @@ public class Client
 //----------SET USER NAME----------
 	private boolean setUserName(String s)
 	{
+		if(s == null)
+			return false;
+		
 		try
 		{
 			this.username = s;
@@ -279,12 +341,29 @@ public class Client
 			System.exit(7);
 		}
 		
-		if()
-		
-		while(true)
+		if(Codes.ON_JOIN.equals(input))
 		{
-			
+			System.out.print("Connection established:  ");
+			System.out.println(remoteHostName+" on "+port);
 		}
+		else
+		{
+			System.out.println("Connection failed\n"+"input: "+input);
+			System.exit(8);
+		}
+		
+		try
+		{
+			outToServer.writeBytes("ELO"+" "+username+" "+localHostName+'\n');
+			
+			input = inFromServer.readLine();
+			System.out.println(input);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 	}
 	
 //----------MAIN----------

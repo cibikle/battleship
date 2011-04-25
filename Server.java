@@ -452,6 +452,8 @@ public class Server
 //----------PROCESS MESSAGE----------
 	public int processMessage(String msg)
 	{ 
+		System.out.println(msg);
+		
 		if(msg.length() < 3)
 		{ 
 			System.err.println("251 Message too short"); 
