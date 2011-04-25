@@ -28,10 +28,10 @@ public class Client
 	
 	private int FIRING_DELAY;
 	
-	private final int HOST_INFO_PROMPT_CODE = 4;
-	private final int PORT_INFO_PROMPT_CODE = 5;
-	private final int USERNAME_INFO_PROMPT_CODE = 6;
-	private final int PROMPT_COMPLETE_CODE = -1;
+	private final char HOST_INFO_PROMPT_CODE = 4;
+	private final char PORT_INFO_PROMPT_CODE = 5;
+	private final char USERNAME_INFO_PROMPT_CODE = 6;
+	private final char PROMPT_COMPLETE_CODE = (char)-1;
 	
 //----------CONSTRUCTOR----------
 	public Client(String[] processedArgs)
@@ -211,65 +211,65 @@ public class Client
 	}
 	
 //----------INFO PROMPT----------
-	private String infoPrompt(int code)
+	private String infoPrompt(char code)
 	{
 		String input = null;
 		
-		while(code == HOST_INFO_PROMPT_CODE)//hostname
+		while(code != PROMPT_COMPLETE_CODE)
 		{
-			System.out.print("Please enter a valid hostname: ");
+			switch (code)
+			{
+				case HOST_INFO_PROMPT_CODE:
+					System.out.print("Please enter a valid hostname: ");
+					break;
+					
+				case PORT_INFO_PROMPT_CODE:
+					System.out.print("Please enter a valid port number:  ");
+					break;
+					
+				case USERNAME_INFO_PROMPT_CODE:
+					System.out.print("Please enter a valid username:  ");
+					break;
+					
+				default:
+					break;
+			}
 			
 			try
 			{
 				input = inFromUser.readLine();
-				
-				if(setRemoteHostName(input))
-					code = PROMPT_COMPLETE_CODE;
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
 				e.printStackTrace();
 			}
-		}
 			
-		while(code == PORT_INFO_PROMPT_CODE)//port
-		{
-			System.out.print("Please enter a valid port number: ");
+			if(input.equalsIgnoreCase("quit") || input.equalsIgnoreCase("cancel"))
+				quit();
 			
-			try
+			switch (code)
 			{
-				input = inFromUser.readLine();
-				
-				if(setPortNumber(input))
-					code = PROMPT_COMPLETE_CODE;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-			
-		while(code == USERNAME_INFO_PROMPT_CODE)//username
-		{
-			System.out.print("Please enter a valid username: ");
-			
-			
-			try
-			{
-				input = inFromUser.readLine();
-				
-				if(setUserName(input))
-					code = PROMPT_COMPLETE_CODE;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				case HOST_INFO_PROMPT_CODE:
+					if(setRemoteHostName(input))
+						code = PROMPT_COMPLETE_CODE;
+					break;
+					
+				case PORT_INFO_PROMPT_CODE:
+					if(setPortNumber(input))
+						code = PROMPT_COMPLETE_CODE;
+					break;
+					
+				case USERNAME_INFO_PROMPT_CODE:
+					if(setUserName(input))
+						code = PROMPT_COMPLETE_CODE;
+					break;
+					
+				default:
+					break;
 			}
 		}
 		
 		return input;
-		
-		//consider revising to use switch
 	}
 	
 //----------SET HOST NAME----------
@@ -364,6 +364,25 @@ public class Client
 			e.printStackTrace();
 		}
 		
+	}
+	
+//----------QUIT----------
+	private void quit()
+	{
+		System.out.println("good bye");
+		
+		try
+		{
+			if(clientSocket != null)
+				if(!clientSocket.isClosed())
+					clientSocket.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		System.exit(10);
 	}
 	
 //----------MAIN----------
