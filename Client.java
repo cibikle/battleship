@@ -378,7 +378,11 @@ public class Client
 		
 		try
 		{
-			outToServer.writeBytes(Codes.SIZ + inFromUser.readLine());
+			String s = inFromUser.readLine();
+			
+			System.out.println("s: "+s);
+			
+			outToServer.writeBytes(Codes.SIZ +" "+ s+Codes.CRLF);
 		}
 		catch(Exception e)
 		{
@@ -396,7 +400,7 @@ public class Client
 			e.printStackTrace();
 		}
 		
-		
+		//<<<<<<
 	}
 	
 //----------QUIT----------
