@@ -28,34 +28,34 @@ public class Server
 	private ServerGlobalMap sgm; 
 	private ShipList shipList; 
 	
-	private static final int DEFAULT_PORT = 8053;
+	private static final int DEFAULT_PORT = 8011;
 	
 	//
 	// Adam Clason
 	// constants for communicating response codes to the client 
 	//
-	private static final String PLAYER_MSG = "001";
-	private static final String SYSTEM_MSG = "002";
+/*	private static final String MSG_PLAYER = "001";
+	private static final String MSG_SYSTEM = "002";
 	
-	private static final String MISS = "100";
-	private static final String HIT = "150";
-	private static final String SUNK = "190";
+	private static final String FIR_MISS = "100";
+	private static final String FIR_HIT = "150";
+	private static final String FIR_SUNK = "190";
 	
 	private static final String ON_JOIN = "220";
 	
 	private static final String OK = "250";
 	private static final String NOT_OK = "251";
 	
-	private static final String NAN = "252";
+	private static final String SIZ_NAN = "252";
 	
 	private static final String ELO_FIRST = "310";
 	private static final String ELO_NOT_FIRST = "350";
-	private static final String NAME_TAKEN = "351";
-	private static final String SERVER_FULL = "390";
+	private static final String ELO_NAME_TAKEN = "351";
+	private static final String ELO_SERVER_FULL = "390";
 	
 	private static final String SHIP_UNDER_ATTACK = "500";
 	private static final String SHIP_SUNK = "505";
-	private static final String ALL_SHIPS_SUNK = "555";
+	private static final String SHIPS_SUNK = "555";
 	
 	private static final String FIRING_DELAY_CODE = "600";
 	
@@ -65,7 +65,7 @@ public class Server
 	
 	private static final String BYE = "900";
 	private static final String END = "990";
-	private static final String WON = "999";
+	private static final String WON = "999";*/
 	
 
 //----------DEFAULT CONSTRUCTOR----------
@@ -78,7 +78,7 @@ public class Server
 		playerList = new ArrayList<String>(); 
 		IPAddrs = new ArrayList<InetAddress>(); 
 		sgm = ServerGlobalMap.getServerGlobalMap(); 
-		shipList = ShipList.getShipList(5);
+		shipList = ShipList.getShipList();
 		
 		try
 		{
@@ -100,7 +100,7 @@ public class Server
 		playerList = new ArrayList<String>(); 
 		IPAddrs = new ArrayList<InetAddress>(); 
 		sgm = ServerGlobalMap.getServerGlobalMap(); 
-		shipList = ShipList.getShipList(5);
+		shipList = ShipList.getShipList();
 		
 		try
 		{
@@ -131,14 +131,14 @@ public class Server
 //----------RUN SERVER----------
 	public void runServer() throws IOException
 	{
-		System.out.println(port);
+//		System.out.println(port);
 		System.out.println("Server running on port "+port);
 		
 		while(true)
 		{ 
 			Socket connectionSocket = serverSocket.accept(); 
-			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+//			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+//			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 			
 			// check first to see who our client is IP-wise
 			// we should write the IP address to match the name 
@@ -147,36 +147,42 @@ public class Server
 			if(!ipInSystem(ip))
 			{
 				IPAddrs.add(ip);
+				
+				System.out.println(ip);
 			}
 			
+			Player p = new Player(connectionSocket, this);
+			Thread t = new Thread(p);
+			t.start();
+			
 			//
-			outToClient.writeBytes((ON_JOIN) + '\n');
+//			outToClient.writeBytes(Codes.ON_JOIN + Codes.CRLF);
 			//
 			
 			// we read as a series of bytes -- for our purposes a String
 			// and send the response message -- for our purposes an int
 			// back to the client as an String
 			
-			String read = inFromClient.readLine(); 
+/*			String read = inFromClient.readLine(); 
 			
 			while(read != null)
 			{
-				int response = processMessage(read); 
-				System.out.println("response: " + Integer.toString(response));
-				outToClient.writeBytes(Integer.toString(response) + '\n'); 
+				String response = processMessage(read); 
+				System.out.println("response: " + (response));
+				outToClient.writeBytes((response) + Codes.CRLF); 
 				read = inFromClient.readLine(); 
-			}
+			}*/
 			
-			if(this.numPlayers == this.serverLimit)
+/*			if(this.numPlayers == this.serverLimit)
 			{ 
 				outToClient.writeBytes("700" + '\n');
 				outToClient.writeBytes("800" + '\n');
-			}
+			}*/
 		}
 	}
 	
 	// slop
-	private void placeShips(int playerNumber) throws ShipOutOfBoundsException, ShipOverlapException {
+/*	private void placeShips(int playerNumber) throws ShipOutOfBoundsException, ShipOverlapException {
 		// ships range from 2 to 5 long
 		Random r = new Random(); 
 		Coordinates c[][] = new Coordinates[5][];
@@ -208,7 +214,7 @@ public class Server
 		for ( int i = 0; i < shipList.length(); i++ ) {
 			this.sgm.addShip(shipList.get(i), i); 
 		}
-	}
+	}*/
 	
 //----------IP IN SYSTEM----------
 	private boolean ipInSystem(InetAddress ip)
@@ -240,7 +246,7 @@ public class Server
 	}
 	
 //----------ELO----------
-	private int elo(String msg)
+	private String elo(String msg)
 	{
 		String name = msg.substring(3, msg.length());
 		boolean foundName = false;
@@ -261,7 +267,7 @@ public class Server
 				System.out.println("310 Added first player " + name + ". Send SIZ");
 				numPlayers = 1; 
 				
-				try
+/*				try
 				{
 					System.out.println(playerList.size());
 					placeShips(playerList.size());
@@ -279,9 +285,11 @@ public class Server
 				
 				System.out.println(this.sgm.reportAll());
 				
-				return 310; // ELO in digits :)
+				return 310; // ELO in digits :)*/
+				
+				return Codes.ELO_FIRST;
 			}
-			else 
+/*			else 
 			{ 
 				if(playerList.size() == serverLimit)
 				{ 
@@ -313,15 +321,15 @@ public class Server
 					
 					return 350;
 				}
-			}
+			}*/
 		}
-		else if(foundName == true)
+/*		else if(foundName == true)
 		{
 			System.out.println("351 Username " + name + " already taken");
 			return 351; 
-		}
+		}*/
 		
-		return 251; 
+		return Codes.NOT_OK; 
 	}
 	
 	/**
@@ -336,7 +344,7 @@ public class Server
 //----------FIR----------
 	private String fir(String msg) throws Exception
 	{
-		String response = NOT_OK;
+		String response = Codes.NOT_OK;
 		
 		try
 		{
@@ -390,7 +398,7 @@ public class Server
 					//
 					if((!hitShip.isSunk) && hitShipCoords[i].isHit(coord))
 					{
-						response = HIT; 
+						response = Codes.FIR_HIT; 
 						hitShip.checkSunk();
 						if(hitShip.isSunk() == true)
 						{
@@ -401,12 +409,12 @@ public class Server
 			}
 			else
 			{
-				response = MISS; 
+				response = Codes.FIR_MISS; 
 			}
 		}
 		catch (Exception ex)
 		{
-			response = NOT_OK; 
+			response = Codes.NOT_OK; 
 			throw new Exception("Error processing targetted coordinates!");
 		}
 		
@@ -450,14 +458,14 @@ public class Server
 	
 	
 //----------PROCESS MESSAGE----------
-	public int processMessage(String msg)
+	public String processMessage(String msg)
 	{ 
-		System.out.println(msg);
+		System.out.println(Thread.currentThread().getId()+" msg: "+msg);
 		
 		if(msg.length() < 3)
 		{ 
 			System.err.println("251 Message too short"); 
-			return 251; 
+			return Codes.NOT_OK; 
 		}
 		
 		// reacting to various codes found in the 
@@ -467,12 +475,12 @@ public class Server
 		
 		if(m.equalsIgnoreCase("ELO"))
 		{ 
-			return elo(msg); 
+			return elo(msg);
 		}
 		
 		if(m.equalsIgnoreCase("SIZ"))
 		{
-			return siz(msg);
+//			return siz(msg);
 		}
 		
 		if(m.equalsIgnoreCase("BYE"))
@@ -480,12 +488,12 @@ public class Server
 			// TODO: disconnect particular client 
 			// and remove their ships
 			// I don't see a remove ship option
-			return bye(msg);
+//			return bye(msg);
 		}
 		
 		if(m.equalsIgnoreCase("MSG"))
 		{ 
-			return msg(msg);
+//			return msg(msg);
 		}
 		
 		if(m.equalsIgnoreCase("FIR"))
@@ -494,35 +502,32 @@ public class Server
 		}
 		
 		// something went bad wrong
-		return 251; 
+		return Codes.NOT_OK; 
 	}
 	
 //----------MAIN----------
-/*	public static void main(String[] args) throws Exception
+	public static void main(String args[]) throws IOException
 	{
-		Server svr = new Server(); 
-		int val = svr.fir("FIR A20"); 
-	}*/
-	
-	/**/
-	 public static void main(String args[]) throws IOException {
-		 System.out.println("starting");
-		 Server s = new Server();
-
-		 if ( args.length > 0 ) {
-		 int portNum = 0;
-
-		 try {
-			 portNum = Integer.parseInt(args[0]);
-		 } catch(NumberFormatException e) {
-			 e.printStackTrace();
-		 }
-
-		 if ( portNum != 0 )
-			 s = new Server(portNum);
-		 }
-
-		 s.runServer();
+		System.out.println("starting");
+		Server s = new Server();
+		
+		if(args.length > 0)
+		{
+			int portNum = 0;
+			
+			try
+			{
+				portNum = Integer.parseInt(args[0]);
+			}
+			catch(NumberFormatException e)
+			{
+				e.printStackTrace();
+			}
+			
+			if(portNum != 0 && portNum != DEFAULT_PORT)
+				s = new Server(portNum);
+		}
+		
+		s.runServer();
 	}
-	/**/
 }

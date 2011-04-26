@@ -20,7 +20,7 @@ public class Client
 	
 	private static Socket clientSocket;
 	
-	private ClientGUI cgui;
+//	private ClientGUI cgui;
 	
 	private BufferedReader inFromUser;
 	private DataOutputStream outToServer;
@@ -224,11 +224,11 @@ public class Client
 					break;
 					
 				case PORT_INFO_PROMPT_CODE:
-					System.out.print("Please enter a valid port number:  ");
+					System.out.print("Please enter a valid port number: ");
 					break;
 					
 				case USERNAME_INFO_PROMPT_CODE:
-					System.out.print("Please enter a valid username:  ");
+					System.out.print("Please enter a valid username: ");
 					break;
 					
 				default:
@@ -275,7 +275,7 @@ public class Client
 //----------SET HOST NAME----------
 	private boolean setRemoteHostName(String s)
 	{
-		if(s == null)
+		if(s == null || "".equals(s))
 			return false;
 		
 		try
@@ -311,7 +311,7 @@ public class Client
 //----------SET USER NAME----------
 	private boolean setUserName(String s)
 	{
-		if(s == null)
+		if(s == null || "".equals(s))
 			return false;
 		
 		try
@@ -343,7 +343,7 @@ public class Client
 		
 		if(Codes.ON_JOIN.equals(input))
 		{
-			System.out.print("Connection established:  ");
+			System.out.print("Connection established: ");
 			System.out.println(remoteHostName+" on "+port);
 		}
 		else
@@ -354,15 +354,48 @@ public class Client
 		
 		try
 		{
-			outToServer.writeBytes("ELO"+" "+username+" "+localHostName+'\n');
-			
-			input = inFromServer.readLine();
-			System.out.println(input);
+			outToServer.writeBytes(Codes.ELO + " " + username + Codes.CRLF);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+		
+		try
+		{
+			input = inFromServer.readLine();
+			System.out.println("*"+input);//<<<<
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(Codes.ELO_FIRST.equals(input))
+		{
+			System.out.println("name accepted; enter SIZ");
+		}
+		
+		try
+		{
+			outToServer.writeBytes(Codes.SIZ + inFromUser.readLine());
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		try
+		{
+			input = inFromServer.readLine();
+			
+			System.out.println(input);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		
 	}
 	
@@ -392,6 +425,7 @@ public class Client
 		
 		Client player = new Client(parsedArgs);
 		
+//		quit();
 		clientSocket.close();
 /*		if ( args.length > 0 )
 		{

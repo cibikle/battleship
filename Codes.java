@@ -9,28 +9,28 @@ package battleship;
 public class Codes
 {
 //----------CODES----------
-	public static final String PLAYER_MSG = "001";
-	public static final String SYSTEM_MSG = "002";
+	public static final String MSG_PLAYER = "001";
+	public static final String MSG_SYSTEM = "002";
 	
-	public static final String MISS = "100";
-	public static final String HIT = "150";
-	public static final String SUNK = "190";
+	public static final String FIR_MISS = "100";
+	public static final String FIR_HIT = "150";
+	public static final String FIR_SUNK = "190";
 	
 	public static final String ON_JOIN = "220";
 	
 	public static final String OK = "250";
 	public static final String NOT_OK = "251";
 	
-	public static final String NAN = "252";
+	public static final String SIZ_NAN = "252";
 	
 	public static final String ELO_FIRST = "310";
 	public static final String ELO_NOT_FIRST = "350";
-	public static final String NAME_TAKEN = "351";
-	public static final String SERVER_FULL = "390";
+	public static final String ELO_NAME_TAKEN = "351";
+	public static final String ELO_SERVER_FULL = "390";
 	
 	public static final String SHIP_UNDER_ATTACK = "500";
 	public static final String SHIP_SUNK = "505";
-	public static final String ALL_SHIPS_SUNK = "555";
+	public static final String SHIPS_SUNK = "555";
 	
 	public static final String FIRING_DELAY_CODE = "600";
 	
@@ -41,4 +41,12 @@ public class Codes
 	public static final String BYE = "900";
 	public static final String END = "990";
 	public static final String WON = "999";
+	
+	public static final String CRLF = "\r\n";
+	
+	public static final String ELO = "ELO";
+	public static final String SIZ = "SIZ";
+	public static final String MSG = "MSG";
+	public static final String FIR = "FIR";
+	public static final String QUIT = "BYE";
 }
