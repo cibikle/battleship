@@ -20,7 +20,7 @@ public class Client
 	
 	private static Socket clientSocket;
 	
-//	private ClientGUI cgui;
+	private ClientGUI cgui;
 	
 	private BufferedReader inFromUser;
 	private DataOutputStream outToServer;
@@ -326,11 +326,9 @@ public class Client
 		return true;
 	}
 	
-//----------RUN----------
-	private void run()
+//----------CONFIRM CONNECTION----------
+	private void confirmConnection(String input)
 	{
-		String input = "";
-		
 		try
 		{
 			input = inFromServer.readLine();
@@ -351,6 +349,12 @@ public class Client
 			System.out.println("Connection failed\n"+"input: "+input);
 			System.exit(8);
 		}
+	}
+	
+//----------SAY ELO----------
+	private boolean sayElo(String input)
+	{
+		boolean success = false;
 		
 		try
 		{
@@ -364,7 +368,7 @@ public class Client
 		try
 		{
 			input = inFromServer.readLine();
-			System.out.println("*"+input);//<<<<
+			System.out.println(input);
 		}
 		catch(Exception e)
 		{
@@ -373,8 +377,42 @@ public class Client
 		
 		if(Codes.ELO_FIRST.equals(input))
 		{
-			System.out.println("name accepted; enter SIZ");
+			System.out.print("name accepted; enter game size: ");
+			
+			while(!acquireSiz(input))
+			{}
+			
+			success = true;
 		}
+		else if(Codes.ELO_NOT_FIRST.equals(input))
+		{
+			System.out.println("name accepted");
+			
+			success = true;
+		}
+		else if(Codes.ELO_SERVER_FULL.equals(input))
+		{
+			System.out.println("server full; try again later");
+			System.exit(11);
+		}
+		else if(Codes.ELO_NAME_TAKEN.equals(input))
+		{
+			System.out.println("name already taken");
+			infoPrompt(USERNAME_INFO_PROMPT_CODE);
+		}
+		else
+		{
+			System.out.println("stuff got mussed up; check on or near line 409 in Client");
+			System.exit(12);
+		}
+		
+		return success;
+	}
+	
+//----------ACQUIRE SIZ----------
+	private boolean acquireSiz(String input)
+	{
+		boolean success = false;
 		
 		try
 		{
@@ -383,6 +421,8 @@ public class Client
 			System.out.println("s: "+s);
 			
 			outToServer.writeBytes(Codes.SIZ +" "+ s+Codes.CRLF);
+			
+//			success = true;
 		}
 		catch(Exception e)
 		{
@@ -400,7 +440,48 @@ public class Client
 			e.printStackTrace();
 		}
 		
-		//<<<<<<
+		if(Codes.OK.equals(input))
+			success = true;
+		
+		return success;
+	}
+	
+//----------RUN----------
+	private void run()
+	{
+		String input = "";
+		
+		confirmConnection(input);
+		
+		while(!sayElo(input))
+		{}
+		
+		cgui = new ClientGUI(outToServer);
+		//somehow need to lock the gui so people can't start screwing around until the game begins
+		
+		try
+		{
+			input = inFromServer.readLine();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		while(input != null)
+		{
+			//do something
+			System.out.println(input);
+			
+			try
+			{
+				input = inFromServer.readLine();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 //----------QUIT----------
@@ -431,52 +512,5 @@ public class Client
 		
 //		quit();
 		clientSocket.close();
-/*		if ( args.length > 0 )
-		{
-//			int portNum = 0;
-			
-			try
-			{
-				portNum = Integer.parseInt(args[0]);
-			}
-			catch(NumberFormatException e)
-			{
-				e.printStackTrace();
-			}
-		}*/
-		
-/*		portNum = Integer.parseInt(args[1]);
-		remoteHostName = args[0];
-		
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		
-		clientSocket = new Socket(remoteHostName, portNum);
-		
-		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-		
-		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		
-		System.out.println("ready");
-		
-		modSentence = inFromServer.readLine();
-		
-		System.out.println("FROM SERVER: " + modSentence);
-		
-		while(true)
-		{
-			sentence = inFromUser.readLine();
-			
-			if(sentence.equals("quit"))
-			{
-				break;
-			}
-			
-			outToServer.writeBytes(sentence+"\n");
-			modSentence = inFromServer.readLine();
-			
-			System.out.println("FROM SERVER: " + modSentence);
-		}
-		
-		clientSocket.close();*/
 	}
 }

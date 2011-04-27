@@ -1,9 +1,15 @@
 package battleship;
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.Dimension;
+
+import java.io.DataOutputStream;
 
 import javax.swing.*;
 import java.util.Date;
+
+
 
 public class ClientGUI extends JFrame
 {
@@ -16,6 +22,8 @@ public class ClientGUI extends JFrame
     // Firing delay is in miliseconds
     // Will be set by server in final version
     private int firingDelay = 5000;
+	
+	private DataOutputStream outToServer;
     
     private boolean allShipsSunk;
 	
@@ -156,8 +164,10 @@ public class ClientGUI extends JFrame
         allShipsSunk = true;
     }
     
-	public ClientGUI() 
+	public ClientGUI(DataOutputStream outToServer) 
     {
+		this.outToServer = outToServer;
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Battleship");
 		scorePanel = new ScorePanel();
@@ -165,18 +175,36 @@ public class ClientGUI extends JFrame
 		oceanDisplay = new OceanDisplay( new MouseFireListener( this ) );
 		add(oceanDisplay);
 		
-		cmdPanel = new CmdPanel(new FireListener(this), (firingDelay/1000));
+		cmdPanel = new CmdPanel(new FireListener(this), (this.firingDelay/1000));
 		
 		add(cmdPanel, BorderLayout.SOUTH);
 		setSize(tileSize*OceanDisplay.columns,tileSize*OceanDisplay.rows);
+		
+		centerOnScreen();
+		
 		setVisible(true);
         
         lastTimeFired = 0;
         allShipsSunk = false;
     }
-    
+	
+	//borrowed from Calif. Speedway project
+	private void centerOnScreen() {
+		Toolkit toolkit = getToolkit();
+		Dimension size = toolkit.getScreenSize();
+		setLocation(size.width / 2 - getWidth() / 2, size.height / 2
+					- getHeight() / 2);
+	}
+	
+	private void bottomCorner() {
+		Toolkit toolkit = getToolkit();
+		Dimension size = toolkit.getScreenSize();
+		setLocation(size.width - getWidth(), size.height - getHeight());
+	}
+    //--
+	
 	public static void main(String[] args) 
     {
-		ClientGUI cg = new ClientGUI();
+//		ClientGUI cg = new ClientGUI();
 	}
 }
