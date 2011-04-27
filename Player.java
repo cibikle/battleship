@@ -56,7 +56,7 @@ public class Player implements Runnable
 				outToClient.writeBytes((response) + Codes.CRLF);
 				read = inFromClient.readLine();
 				
-				System.out.println(Thread.currentThread()+" read: "+read);
+				System.out.println(Thread.currentThread().getId()+" read: "+read);
 			}
 		}
 		catch (Exception e)

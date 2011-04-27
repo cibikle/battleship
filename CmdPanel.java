@@ -47,6 +47,11 @@ public class CmdPanel extends JPanel
 	{
 		return cdt;
 	}
+	
+	public void setCooldownTimer(int time)
+	{
+		cdt = new CooldownTimer(time);
+	}
     
     public void displaySystemMessage( String message )
     {

@@ -242,16 +242,18 @@ public class Server
 	 * @return whether or not a ship was hit. 
 	 */
 //----------FIR----------
-	private String fir(String msg) throws Exception
+	private String fir(String msg)
 	{
 		String response = Codes.NOT_OK;
+		
+		String rowCol = "";
 		
 		try
 		{
 			//
 			// Get the row and column string from the fire command 
 			//
-			String rowCol = msg.substring(msg.indexOf(' '), msg.length()).trim(); 
+			 rowCol = msg.substring(msg.indexOf(' '), msg.length()).trim(); 
 			//
 			// Get the row and column as integers so we 
 			// can see if the coordinates passed from the 
@@ -266,7 +268,7 @@ public class Server
 			// Create a coordinate object that can be 
 			// passed to the server map 
 			//
-			Coordinates coord = new Coordinates(rowIdx, colIdx); 
+			Coordinates coord = new Coordinates(colIdx, rowIdx); 
 			//
 			// Ask the server global map if the coordinates intersect
 			// a ship on it's map. 
@@ -315,10 +317,10 @@ public class Server
 		catch (Exception ex)
 		{
 			response = Codes.NOT_OK; 
-			throw new Exception("Error processing targetted coordinates!");
+//			throw new Exception("Error processing targetted coordinates!");
 		}
 		
-		return response; 
+		return response + " " + rowCol; 
 	}
 	
 //----------BYE----------
@@ -430,6 +432,8 @@ public class Server
 		if(m.equalsIgnoreCase("FIR"))
 		{
 			// someone else can handle this I think
+			
+			return fir(msg);
 		}
 		
 		// something went bad wrong

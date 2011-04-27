@@ -352,8 +352,9 @@ public class Client
 	}
 	
 //----------SAY ELO----------
-	private boolean sayElo(String input)
+	private boolean sayElo()
 	{
+		String input = "";
 		boolean success = false;
 		
 		try
@@ -379,7 +380,7 @@ public class Client
 		{
 			System.out.print("name accepted; enter game size: ");
 			
-			while(!acquireSiz(input))
+			while(!acquireSiz())
 			{}
 			
 			success = true;
@@ -410,8 +411,9 @@ public class Client
 	}
 	
 //----------ACQUIRE SIZ----------
-	private boolean acquireSiz(String input)
+	private boolean acquireSiz()
 	{
+		String input = "";
 		boolean success = false;
 		
 		try
@@ -421,8 +423,6 @@ public class Client
 			System.out.println("s: "+s);
 			
 			outToServer.writeBytes(Codes.SIZ +" "+ s+Codes.CRLF);
-			
-//			success = true;
 		}
 		catch(Exception e)
 		{
@@ -446,6 +446,81 @@ public class Client
 		return success;
 	}
 	
+//----------FIRING DELAY HANDLER----------
+	private void firingDelayHandler(String input)
+	{
+		int time = 0;
+		
+		try
+		{
+			time = Integer.parseInt(input.substring(3).trim());
+		}
+		catch(NumberFormatException e)
+		{
+			e.printStackTrace();
+		}
+		
+		cgui.setFiringDelay(""+time);
+	}
+	
+//----------FIR RESPONSE----------
+	private void firResponse(String input)
+	{
+		String response = input.substring( 0, 3 );
+		
+		String rowCol = input.substring(3).trim();
+		
+		try
+		{
+			if( response.equals(Codes.FIR_MISS) )
+			{
+				cgui.getOceanDisplay().mapMiss( rowCol, true );
+				cgui.getCmdPanel().displaySystemMessage( "Miss!" );
+			}
+			else if( response.equals(Codes.FIR_HIT) || response.equals(Codes.FIR_SUNK) )
+			{
+				cgui.getOceanDisplay().mapHit( rowCol, true );
+				cgui.getCmdPanel().displaySystemMessage( "Hit!" );
+				cgui.getScorePanel().incScore();
+			}
+		}
+		catch( NumberFormatException nfe )
+		{
+			System.err.println( "Received the following bad response: " + response );
+			nfe.printStackTrace();
+		}
+	}
+	
+//----------SHIP PLACEMENT----------
+	private void shipPlacement(String input)
+	{
+		cgui.placeShips(input.substring(3).trim());
+	}
+	
+//----------SHIP UNDER ATTACK----------
+	private void shipUnderAttack(String input)
+	{
+		String response = input.substring(0,3);
+		String rowCol = input.substring(3).trim();
+		
+		if(response.equals(Codes.SHIP_HIT))
+		{
+			cgui.shipHit(rowCol);
+		}
+		else if(response.equals(Codes.SHIP_SUNK))
+		{
+			cgui.shipSunk(rowCol);
+		}
+		else if(response.equals(Codes.SHIPS_SUNK))
+		{
+			cgui.allShipsSunk();
+		}
+		else
+		{
+			System.out.println("stuff got mussed up; check on or near line 522 in Client");
+		}
+	}
+	
 //----------RUN----------
 	private void run()
 	{
@@ -453,7 +528,7 @@ public class Client
 		
 		confirmConnection(input);
 		
-		while(!sayElo(input))
+		while(!sayElo())
 		{}
 		
 		cgui = new ClientGUI(outToServer);
@@ -473,6 +548,8 @@ public class Client
 			//do something
 			System.out.println(input);
 			
+			processInput(input);
+			
 			try
 			{
 				input = inFromServer.readLine();
@@ -482,6 +559,21 @@ public class Client
 				e.printStackTrace();
 			}
 		}
+		
+		//this whole thing needs to be rewritten to be a mite more general
+	}
+	
+//----------PROCESS INPUT----------
+	private void processInput(String input)
+	{
+		//messages {001, 002}					<<
+		//firing results {100, 150, 190}		√
+		//ok/not {250, 251}						x
+		//ship under attack {500, 505, 555}		√
+		//firing delay {600}					√
+		//ship placement {700}					√
+		//begin {800}							<<
+		//bye/end/won {900, 990, 999}			<<
 	}
 	
 //----------QUIT----------

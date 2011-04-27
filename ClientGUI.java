@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
 import javax.swing.*;
 import java.util.Date;
 
-
+import java.io.IOException;
 
 public class ClientGUI extends JFrame
 {
@@ -53,6 +53,8 @@ public class ClientGUI extends JFrame
     {
         message = message.trim();
         firingDelay = Integer.parseInt( message );
+		
+		cmdPanel.setCooldownTimer(firingDelay);
     }
 	
 	public void callShot( String rowCol )
@@ -71,8 +73,20 @@ public class ClientGUI extends JFrame
             {
                 String message = "FIR " + rowCol + CRLF;
                 // Send message into the œther.
-                String response = "100 And this would be the response.";
-                response = response.substring( 0, 3 );
+				
+				try
+				{
+					outToServer.writeBytes(message);
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
+				
+//				String response = inFromServer.readLine();
+				
+//                String response = "100 And this would be the response.";
+ /*               response = response.substring( 0, 3 );
                 try
                 {
                     if( Integer.parseInt( response ) == 100 )
@@ -91,7 +105,7 @@ public class ClientGUI extends JFrame
                 {
                     System.err.println( "Received the following bad response: " + response );
                     nfe.printStackTrace();
-                }
+                }*/
                 lastTimeFired = curTime;
 				
 				Thread timerThread = new Thread(cmdPanel.getCooldownTimer());

@@ -28,7 +28,7 @@ public class Codes
 	public static final String ELO_NAME_TAKEN = "351";
 	public static final String ELO_SERVER_FULL = "390";
 	
-	public static final String SHIP_UNDER_ATTACK = "500";
+	public static final String SHIP_HIT = "500";
 	public static final String SHIP_SUNK = "505";
 	public static final String SHIPS_SUNK = "555";
 	
