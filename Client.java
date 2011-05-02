@@ -521,6 +521,57 @@ public class Client
 		}
 	}
 	
+//----------BEGIN GAME----------
+	private void beginGame()
+	{
+		cgui.beginGame();
+	}
+	
+//----------BYE/END/WON----------
+	private void byeEndWon(String input)
+	{
+		String responseCode = input.substring(0,3);
+		String player = input.substring(3).trim();
+		
+		if(responseCode.equals(Codes.BYE))
+		{
+			cgui.bye(player);
+		}
+		else if(responseCode.equals(Codes.END))
+		{
+			cgui.end();
+		}
+		else if(responseCode.equals(Codes.WON))
+		{
+			cgui.won(player);
+		}
+		else
+		{
+			System.out.println("stuff got messed up; check on or near line 550 in Client");
+		}
+
+	}
+	
+//----------MESSAGING----------
+	private void messaging(String input)
+	{
+		String responseCode = input.substring(0,3);
+		String msg = input.substring(3).trim();
+		
+		if(responseCode.equals(Codes.MSG_SYSTEM))
+		{
+			cgui.displaySysMsg(msg);
+		}
+		else if(responseCode.equals(Codes.MSG_PLAYER))
+		{
+			cgui.displayPlayerMsg(msg);
+		}
+		else
+		{
+			System.out.println("stuff got messed up; check on or near line 571 in Client");
+		}
+	}
+	
 //----------RUN----------
 	private void run()
 	{
@@ -566,14 +617,54 @@ public class Client
 //----------PROCESS INPUT----------
 	private void processInput(String input)
 	{
-		//messages {001, 002}					<<
+		//messages {001, 002}					√
 		//firing results {100, 150, 190}		√
 		//ok/not {250, 251}						x
 		//ship under attack {500, 505, 555}		√
 		//firing delay {600}					√
 		//ship placement {700}					√
-		//begin {800}							<<
-		//bye/end/won {900, 990, 999}			<<
+		//begin {800}							√
+		//bye/end/won {900, 990, 999}			√
+		
+		String code = input.substring(0,3);
+		
+		if(code.charAt(0) == Codes.MSG_PLAYER.charAt(0))//MSG
+		{
+			messaging(input);
+		}
+		else if(code.charAt(0) == Codes.FIR_MISS.charAt(0))//FIR
+		{
+			firResponse(input);
+		}
+		else if(code.charAt(0) == Codes.ELO_FIRST.charAt(0))//ELO
+		{
+			//TODO: call to elo method here
+			System.out.println(input);
+		}
+		else if(code.charAt(0) == Codes.SHIP_HIT.charAt(0))//SHIP
+		{
+			shipUnderAttack(input);
+		}
+		else if(code.charAt(0) == Codes.FIRING_DELAY_CODE.charAt(0))//DELAY
+		{
+			firingDelayHandler(input);
+		}
+		else if(code.charAt(0) == Codes.SHIP_PLACEMENT.charAt(0))//PLACEMENT
+		{
+			shipPlacement(input);
+		}
+		else if(code.charAt(0) == Codes.BEGIN.charAt(0))//BEGIN
+		{
+			beginGame();
+		}
+		else if(code.charAt(0) == Codes.BYE.charAt(0))//BYE
+		{
+			byeEndWon(input);
+		}
+		else
+		{
+			System.out.println("something went bad on or near line 666 in Client (bad input from server)");
+		}
 	}
 	
 //----------QUIT----------

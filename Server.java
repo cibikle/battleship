@@ -32,6 +32,10 @@ public class Server
 	private ShipList shipList; 
 	private Semaphore firstPlayerSema = new Semaphore(1, true);
 	private Lock lock = new ReentrantLock();
+	private Boolean gameBegun = false;
+	private Starter s;
+	
+	private static final int FIRING_DELAY = 6000;//in millis
 	
 	private static final int DEFAULT_PORT = 8011;
 
@@ -100,6 +104,10 @@ public class Server
 	{
 		System.out.println("Server running on port " + port);
 		
+		s = new Starter(this);
+		Thread starter = new Thread(s);
+		starter.start();
+		
 		while(true)
 		{ 
 			Socket connectionSocket = serverSocket.accept();
@@ -119,6 +127,8 @@ public class Server
 			Player p = new Player(connectionSocket, this);
 			Thread t = new Thread(p);
 			t.start();
+			
+			s.addClient(new DataOutputStream(connectionSocket.getOutputStream()));
 		}
 	}
 	
@@ -189,6 +199,8 @@ public class Server
 		String name = msg.substring(3, msg.length()).trim();
 		boolean foundName = false;
 		
+		String response = Codes.NOT_OK;
+		
 		if(playerList.contains(name))
 		{
 			foundName = true; 
@@ -202,15 +214,15 @@ public class Server
 				System.out.println("310 Added first player " + name + ". Send SIZ");
 				numPlayers = 1; 
 				
-				return Codes.ELO_FIRST;
+				response = Codes.ELO_FIRST;
 			}
 			else 
 			{ 
-				if(playerList.size() == serverLimit)
+				if(numPlayers == serverLimit)
 				{ 
 					System.out.println("390 Server full"); 
 					
-					return Codes.ELO_SERVER_FULL;
+					response = Codes.ELO_SERVER_FULL;
 				}
 				else
 				{ 
@@ -218,7 +230,7 @@ public class Server
 					numPlayers++; 
 					System.out.println("350 Added player " + name);
 					
-					return Codes.ELO_NOT_FIRST;
+					response = Codes.ELO_NOT_FIRST;
 				}
 			}
 		}
@@ -226,10 +238,16 @@ public class Server
 		{
 			System.out.println("351 Username " + name + " already taken");
 			
-			return Codes.ELO_NAME_TAKEN; 
+			response = Codes.ELO_NAME_TAKEN; 
 		}
 		
-		return Codes.NOT_OK; 
+		if(numPlayers == serverLimit/* && gameBegun == false*/)
+		{
+			System.out.println("yo");
+			begin("");
+		}
+		
+		return response; 
 	}
 	
 	/**
@@ -347,8 +365,6 @@ public class Server
 			e.printStackTrace();
 		}
 		
-		
-		
 		if(firstPlayerSema.tryAcquire())
 		{ 
 			try
@@ -387,6 +403,28 @@ public class Server
 			System.out.println("251 Not First Player");
 			return Codes.NOT_OK; 
 		}
+	}
+	
+//----------FIRING DELAY----------
+	private String fd(String msg)
+	{
+		return Codes.FIRING_DELAY_CODE+" "+FIRING_DELAY;
+	}
+	
+//----------BEGIN----------
+	private String begin(String msg)
+	{
+		System.out.println("hi");
+		if(numPlayers == serverLimit && gameBegun == false)
+		{
+			synchronized (gameBegun)
+			{
+				gameBegun.notify();
+			}
+			return Codes.OK;
+		}
+		else
+			return Codes.NOT_OK;
 	}
 	
 	
@@ -431,10 +469,12 @@ public class Server
 		
 		if(m.equalsIgnoreCase("FIR"))
 		{
-			// someone else can handle this I think
-			
 			return fir(msg);
 		}
+		if(m.equalsIgnoreCase("FDC"))
+			return fd(msg);
+		if(m.equalsIgnoreCase(Codes.BGN))
+			return begin(msg);
 		
 		// something went bad wrong
 		return Codes.NOT_OK;
@@ -464,5 +504,76 @@ public class Server
 		}
 		
 		s.runServer();
+	}
+	
+	private class Starter implements Runnable
+	{
+		ArrayList<DataOutputStream> toClients = new ArrayList<DataOutputStream>();
+		Server s;
+		
+		public Starter(Server s)
+		{
+			System.out.println("Starter constructed");
+			this.s = s;
+		}
+		
+		public void addClient(DataOutputStream clientStream)
+		{
+			System.out.println("added client stream");
+			toClients.add(clientStream);
+		}
+		
+		private void contactClients(String msg)
+		{
+			for(DataOutputStream outToClient : toClients)
+			{
+				System.out.println("contacting "+outToClient);
+				try
+				{
+					outToClient.writeBytes(msg+Codes.CRLF);
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
+			gameBegun = true;
+		}
+		
+		public void run()
+		{
+			System.out.println("Starter started");
+			synchronized (s.gameBegun)
+			{
+				try
+				{
+					System.out.println("Starter waiting");
+					s.gameBegun.wait();
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+					System.exit(14);
+				}
+				
+				System.out.println("Starter woken");
+			}
+			
+			try
+			{
+				System.out.println("Starter sleeping");
+				Thread.sleep(2000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+				System.exit(15);
+			}
+			
+			System.out.println("Starter awake");
+			
+			contactClients(Codes.BEGIN);
+		}
 	}
 }

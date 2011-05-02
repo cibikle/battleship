@@ -20,12 +20,21 @@ public class ClientGUI extends JFrame
     private long lastTimeFired;
     private final static String CRLF = "\r\n";
     // Firing delay is in miliseconds
-    // Will be set by server in final version
+	//defaults to 5 sec; asks the server if it has a different firing delay to use
     private int firingDelay = 5000;
 	
 	private DataOutputStream outToServer;
     
     private boolean allShipsSunk;
+	
+	private boolean gameBegun = false;
+	
+//methods
+	
+	public void beginGame()
+	{
+		gameBegun = true;
+	}
 	
 	public int getFiringDelay()
 	{
@@ -46,6 +55,32 @@ public class ClientGUI extends JFrame
     {
 		return cmdPanel;
 	}
+	
+//----------REQUEST FIRING DELAY----------
+	private void requestFiringDelay()
+	{
+		try
+		{
+			outToServer.writeBytes("FDC"+Codes.CRLF);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+//----------REQUEST SHIP PLACEMENT----------
+	private void requestShipPlacement()
+	{
+//		try
+//		{
+//			outToServer.writeBytes(/8request*/);
+//		}
+//		catch(IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+	}
     
     //Should be called by a 600 message from server
     //currently firing delay is hardcoded in a final int; fix for final version
@@ -54,11 +89,19 @@ public class ClientGUI extends JFrame
         message = message.trim();
         firingDelay = Integer.parseInt( message );
 		
-		cmdPanel.setCooldownTimer(firingDelay);
+		cmdPanel.setCooldownTimer(firingDelay/1000);
+		
+		System.out.println("firing delay, hopefully server's (6000): "+this.firingDelay);
     }
 	
 	public void callShot( String rowCol )
     { 
+		if(!gameBegun)
+		{
+			cmdPanel.displaySystemMessage("Game has not begun!");
+			return;
+		}
+		
 		if( !inbounds( rowCol ) )
 		{
 			cmdPanel.displaySystemMessage("Coordinate(s) out of bounds!");
@@ -177,10 +220,66 @@ public class ClientGUI extends JFrame
         cmdPanel.displaySystemMessage( "All your ships have been sunk." );
         allShipsSunk = true;
     }
+	
+//----------BYE----------
+	public void bye(String msg)
+	{
+		cmdPanel.displaySystemMessage("Player "+msg+" has left the game");
+	}
+	
+//----------END----------
+	public void end()
+	{
+		cmdPanel.displaySystemMessage("All other players have left the game");
+	}
+	
+//----------WON----------
+	public void won(String msg)
+	{
+		cmdPanel.displaySystemMessage("Player "+msg+" has won!");//<<add score
+	}
+	
+//----------DISPLAY SYS MSG----------
+	public void displaySysMsg(String msg)
+	{
+		cmdPanel.displaySystemMessage(msg);
+		
+		if(msg.contains("joined"))//eg Player Angle O'Saxon joined the game (2/2)
+		{
+			if(msg.contains("(") && msg.contains(")"))
+			{
+				String fraction = msg.substring((msg.indexOf("(")+1), (msg.indexOf(")"))).trim();
+				System.out.println(fraction);
+				String[] numbers = fraction.split("/");
+				
+				if(numbers[0] == numbers[1])
+				{
+					try
+					{
+						outToServer.writeBytes(Codes.BGN);
+					}
+					catch(IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
+//----------DISPLAY PLAYER MSG----------
+	public void displayPlayerMsg(String msg)
+	{
+		System.out.println(msg);
+	}
     
 	public ClientGUI(DataOutputStream outToServer) 
     {
 		this.outToServer = outToServer;
+		
+		//add requests for Ship Placement(<<), Firing Delay(√)
+		//at which points should these be called?
+		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Battleship");
@@ -189,10 +288,15 @@ public class ClientGUI extends JFrame
 		oceanDisplay = new OceanDisplay( new MouseFireListener( this ) );
 		add(oceanDisplay);
 		
+		requestFiringDelay();
+		
+		System.out.println("firing delay, probably default (5000): "+this.firingDelay);
+		
 		cmdPanel = new CmdPanel(new FireListener(this), (this.firingDelay/1000));
 		
 		add(cmdPanel, BorderLayout.SOUTH);
-		setSize(tileSize*OceanDisplay.columns,tileSize*OceanDisplay.rows);
+		setSize(tileSize * OceanDisplay.columns
+				, tileSize * OceanDisplay.rows);
 		
 		centerOnScreen();
 		
@@ -200,6 +304,8 @@ public class ClientGUI extends JFrame
         
         lastTimeFired = 0;
         allShipsSunk = false;
+		
+		System.out.println("firing delay, possibly default (5000): "+this.firingDelay);
     }
 	
 	//borrowed from Calif. Speedway project

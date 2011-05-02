@@ -49,4 +49,5 @@ public class Codes
 	public static final String MSG = "MSG";
 	public static final String FIR = "FIR";
 	public static final String QUIT = "BYE";
+	public static final String BGN = "BGN";
 }
