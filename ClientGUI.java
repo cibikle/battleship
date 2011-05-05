@@ -61,7 +61,7 @@ public class ClientGUI extends JFrame
 	{
 		try
 		{
-			outToServer.writeBytes("FDC"+Codes.CRLF);
+			outToServer.writeBytes(Codes.FDC+Codes.CRLF);
 		}
 		catch(IOException e)
 		{
@@ -72,14 +72,14 @@ public class ClientGUI extends JFrame
 //----------REQUEST SHIP PLACEMENT----------
 	private void requestShipPlacement()
 	{
-//		try
-//		{
-//			outToServer.writeBytes(/8request*/);
-//		}
-//		catch(IOException e)
-//		{
-//			e.printStackTrace();
-//		}
+		try
+		{
+			outToServer.writeBytes(Codes.SHP+Codes.CRLF);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
     
     //Should be called by a 600 message from server
@@ -91,7 +91,7 @@ public class ClientGUI extends JFrame
 		
 		cmdPanel.setCooldownTimer(firingDelay/1000);
 		
-		System.out.println("firing delay, hopefully server's (6000): "+this.firingDelay);
+		System.out.println("firing delay, hopefully server's (2000): "+this.firingDelay);
     }
 	
 	public void callShot( String rowCol )
@@ -185,6 +185,8 @@ public class ClientGUI extends JFrame
     //Should be called once you've got a 700 message from server
     public void placeShips( String shipLocations )
     {
+		System.out.println(shipLocations);
+		
         System.out.println( shipLocations );
         shipLocations = shipLocations.trim();
         String ships[] = shipLocations.split( "/" );
@@ -193,6 +195,8 @@ public class ClientGUI extends JFrame
             String shipSections[] = ships[i].split( ":" );
             for( int j = 0; j < shipSections.length; j++ )
             {
+				System.out.println(shipSections[j]);
+				
                 oceanDisplay.mapShip( shipSections[j], true );
             }
         }
@@ -289,6 +293,8 @@ public class ClientGUI extends JFrame
 		add(oceanDisplay);
 		
 		requestFiringDelay();
+		
+		requestShipPlacement();
 		
 		System.out.println("firing delay, probably default (5000): "+this.firingDelay);
 		

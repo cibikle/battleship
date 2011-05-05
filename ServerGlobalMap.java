@@ -51,7 +51,7 @@ public class ServerGlobalMap
 //----------SET SHIP SECTION----------
 	private void setShipSection(Coordinates c, int shipNumber)
 	{
-		this.grid[c.getY()][c.getX()] = shipNumber;
+		this.grid[c.getRow()][c.getColumn()] = shipNumber;
 	}
 	
 //----------TEST SHIP SECTION----------
@@ -116,8 +116,8 @@ public class ServerGlobalMap
 		
 		for(int i = 0; i < shipCoords.length; i++)
 		{
-			x = shipCoords[i].getX();
-			y = shipCoords[i].getY();
+			x = shipCoords[i].getColumn();
+			y = shipCoords[i].getRow();
 			
 			if(this.grid[y][x] == shipNumber)
 				this.grid[y][x] = -1;
@@ -134,9 +134,9 @@ public class ServerGlobalMap
 	{
 		System.out.println(c);
 		
-		if(c.getX() < 0 || c.getX() > this.grid[0].length)
+		if(c.getColumn() < 0 || c.getColumn() > this.grid[0].length)
 			return false;
-		if(c.getY() < 0 || c.getY() > this.grid.length)
+		if(c.getRow() < 0 || c.getRow() > this.grid.length)
 			return false;
 		return true;
 	}
@@ -144,7 +144,7 @@ public class ServerGlobalMap
 //----------SHIP CLEAR----------
 	private boolean shipClear(Coordinates c)
 	{
-		if(this.grid[c.getY()][c.getX()] == -1)
+		if(this.grid[c.getRow()][c.getColumn()] == -1)
 			return true;
 		else
 			return false;
@@ -153,12 +153,12 @@ public class ServerGlobalMap
 //----------REPORT----------
 	public int report(Coordinates c)
 	{
-//		int sector = this.grid[c.getY()][c.getX()];
+//		int sector = this.grid[c.getRow()][c.getColumn()];
 //		int report = sector;
 		
 //		return report;
 		
-		return this.grid[c.getY()][c.getX()];
+		return this.grid[c.getRow()][c.getColumn()];
 	}
 	
 //----------REPORT ALL----------
@@ -184,7 +184,7 @@ public class ServerGlobalMap
 //----------GET IMPACT----------//not recommended
 	public int getImpact(Coordinates c) throws ArrayIndexOutOfBoundsException
 	{
-		int sector = this.grid[c.getY()][c.getX()];
+		int sector = this.grid[c.getRow()][c.getColumn()];
 		int report = sector;
 		
 		if(sector >= 0)
@@ -193,7 +193,7 @@ public class ServerGlobalMap
 			sector = -1;
 		}
 		
-		this.grid[c.getY()][c.getX()] = sector;
+		this.grid[c.getRow()][c.getColumn()] = sector;
 		
 		return report;
 	}

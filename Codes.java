@@ -50,4 +50,8 @@ public class Codes
 	public static final String FIR = "FIR";
 	public static final String QUIT = "BYE";
 	public static final String BGN = "BGN";
+	public static final String FDC = "FDC";
+	public static final String SHP = "SHP";
+	
+	public static String ROW_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 }

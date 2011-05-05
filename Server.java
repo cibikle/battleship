@@ -34,8 +34,15 @@ public class Server
 	private Lock lock = new ReentrantLock();
 	private Boolean gameBegun = false;
 	private Starter s;
+	private ShipGenerator utopiaPlanetia;
+	private Ship[] ships;
+	private int curPlayer = 0;
 	
-	private static final int FIRING_DELAY = 6000;//in millis
+	private static final int SHIP_MAX_SIZE = 5;
+	private static final int SHIPS_PER_PLAYER = 5;
+	private static final int SERVER_MAX = 8;
+	
+	private static final int FIRING_DELAY = 2000;//in millis
 	
 	private static final int DEFAULT_PORT = 8011;
 
@@ -117,11 +124,11 @@ public class Server
 			
 			InetAddress ip = connectionSocket.getInetAddress();
 			
+			System.out.println(ip);
+			
 			if(!ipInSystem(ip))
 			{
 				IPAddrs.add(ip);
-				
-				System.out.println(ip);
 			}
 			
 			Player p = new Player(connectionSocket, this);
@@ -224,6 +231,10 @@ public class Server
 					
 					response = Codes.ELO_SERVER_FULL;
 				}
+				else if(serverLimit == 0)
+				{
+					response = Codes.NOT_OK+" SIZ not set";
+				}
 				else
 				{ 
 					playerList.add(name);
@@ -241,7 +252,7 @@ public class Server
 			response = Codes.ELO_NAME_TAKEN; 
 		}
 		
-		if(numPlayers == serverLimit/* && gameBegun == false*/)
+		if(numPlayers == serverLimit && serverLimit > 1)
 		{
 			System.out.println("yo");
 			begin("");
@@ -286,7 +297,7 @@ public class Server
 			// Create a coordinate object that can be 
 			// passed to the server map 
 			//
-			Coordinates coord = new Coordinates(colIdx, rowIdx); 
+			Coordinates coord = new Coordinates(colIdx, row); 
 			//
 			// Ask the server global map if the coordinates intersect
 			// a ship on it's map. 
@@ -300,6 +311,8 @@ public class Server
 			//
 			if(reportIndicator >= 0)
 			{
+				System.out.println("*");
+				
 				Ship hitShip = shipList.get(reportIndicator);
 				//
 				// Get the hit ships coordinates. We need to do this 
@@ -318,6 +331,8 @@ public class Server
 					//
 					if((!hitShip.isSunk) && hitShipCoords[i].isHit(coord))
 					{
+						System.out.println("***");
+						
 						response = Codes.FIR_HIT; 
 						hitShip.checkSunk();
 						if(hitShip.isSunk() == true)
@@ -379,9 +394,15 @@ public class Server
 			try
 			{
 				int size = Integer.parseInt(msg.substring(3, msg.length()).trim());
-				this.serverLimit = size; 
+				
+				if(size > SERVER_MAX)
+					throw new Exception();
+				
+				this.serverLimit = size;
 				System.out.println("250 OK");
-				return Codes.OK; 
+				utopiaPlanetia = new ShipGenerator(serverLimit, SHIP_MAX_SIZE, SHIPS_PER_PLAYER);
+				ships = utopiaPlanetia.generateShips(serverLimit);
+				return Codes.OK;
 			}
 			catch(Exception e)
 			{ 
@@ -425,6 +446,45 @@ public class Server
 		}
 		else
 			return Codes.NOT_OK;
+	}
+	
+//----------SHIP PLACEMENT----------
+	private String shipPlacement()
+	{
+		//how do we figure out which player is which?
+		
+		int x = curPlayer * SHIPS_PER_PLAYER;
+		String ship = "";
+		
+		for(int j = x; j < (SHIPS_PER_PLAYER * (curPlayer + 1)); j++)
+		{
+			for(int i = 0; i < ships[j].coords.length; i++)
+			{
+				ship += toChar(ships[j].coords[i].getRow()) + "" + ships[j].coords[i].getColumn() + ":";
+			}
+			
+			ship = ship.substring(0, ship.lastIndexOf(":"));
+			
+			ship += "/";
+		}
+		
+		curPlayer++;
+		
+		return Codes.SHIP_PLACEMENT+ " " + ship.substring(0, ship.lastIndexOf("/"));
+	}
+	
+//----------TO CHAR----------
+	private char toChar(int row)
+	{
+		System.out.println("row: "+row);
+		
+		char result;
+		
+		result = Codes.ROW_LABELS.charAt(row);
+		
+		System.out.println("result: "+result);
+		
+		return result;
 	}
 	
 	
@@ -475,6 +535,8 @@ public class Server
 			return fd(msg);
 		if(m.equalsIgnoreCase(Codes.BGN))
 			return begin(msg);
+		if(m.equalsIgnoreCase(Codes.SHP))
+			return shipPlacement();
 		
 		// something went bad wrong
 		return Codes.NOT_OK;

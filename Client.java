@@ -583,7 +583,6 @@ public class Client
 		{}
 		
 		cgui = new ClientGUI(outToServer);
-		//somehow need to lock the gui so people can't start screwing around until the game begins
 		
 		try
 		{
@@ -596,7 +595,6 @@ public class Client
 		
 		while(input != null)
 		{
-			//do something
 			System.out.println(input);
 			
 			processInput(input);
@@ -626,7 +624,17 @@ public class Client
 		//begin {800}							√
 		//bye/end/won {900, 990, 999}			√
 		
-		String code = input.substring(0,3);
+		String code = "";
+		
+		try
+		{
+			code = input.substring(0,3);
+		}
+		catch(StringIndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+			return;
+		}
 		
 		if(code.charAt(0) == Codes.MSG_PLAYER.charAt(0))//MSG
 		{

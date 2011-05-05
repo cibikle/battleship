@@ -15,12 +15,14 @@ public class ShipGenerator
 	private static Random ayn = new Random();
 	private int maxSize;
 	private int numOfPlayers;
+	private int shipsPerPlayer;
 	
 //----------CONSTRUCTOR----------
-	public ShipGenerator(int numOfPlayers, int maxSize)
+	public ShipGenerator(int numOfPlayers, int maxSize, int shipsPerPlayer)
 	{
 		this.numOfPlayers = numOfPlayers;
 		this.maxSize = maxSize;
+		this.shipsPerPlayer = shipsPerPlayer;
 	}
 	
 //----------GET MAX SIZE----------
@@ -52,6 +54,7 @@ public class ShipGenerator
 	{
 		int x = -1;
 		int y = -1;
+		char row = ' ';
 		int direction = -1;
 		Coordinates[] coords = null;
 		
@@ -61,13 +64,23 @@ public class ShipGenerator
 		{
 //			System.out.println("sectionsCheckOut: "+sectionsCheckOut);
 			
-			x = ayn.nextInt(COLS);
-			y = ayn.nextInt(ROWS);
+			x = ayn.nextInt(COLS+1);
+			while(x < 1)
+				x = ayn.nextInt(COLS+1);
+			
+			y = ayn.nextInt(ROWS+1);
+			while(y < 1)
+				ayn.nextInt(ROWS+1);
+			
+			row = Codes.ROW_LABELS.charAt(y);
+			
+			//right in the middle of converting everything to a rowCol (charInt) standard
+			
 			direction = ayn.nextInt(4);
 			
 			try
 			{
-				coords = formALine(new Coordinates(x, y), direction, shipLength);
+				coords = formALine(new Coordinates(x, row), direction, shipLength);
 			}
 			catch(Exception e)
 			{
@@ -103,8 +116,8 @@ public class ShipGenerator
 	{
 		Coordinates[] coords = new Coordinates[shipLength];
 		char dir = Integer.toString(direction).charAt(0);
-		int x = startPoint.getX();
-		int y = startPoint.getY();
+		int x = startPoint.getColumn();
+		int y = startPoint.getRow();
 		int xa = 0;
 		int ya = 0;
 		
@@ -153,7 +166,7 @@ public class ShipGenerator
 //----------GENERATE SHIPS----------//returns a fleet of ships guaranteed to fit on the field of play and not overlap
 	public Ship[] generateShips(int numOfPlayers)
 	{
-		Ship[] whoCalledInTheFleet = new Ship[numOfPlayers * 5];
+		Ship[] whoCalledInTheFleet = new Ship[numOfPlayers * shipsPerPlayer];
 		int size = maxSize;
 		int playerNumber = 0;
 		int counter = maxSize-1;
@@ -204,7 +217,7 @@ public class ShipGenerator
 		if(args.length > 0)
 			number = Integer.parseInt(args[0]);
 		
-		ShipGenerator utopiaPlanitia = new ShipGenerator(number, 5);
+		ShipGenerator utopiaPlanitia = new ShipGenerator(number, 5, 5);
 		
 		Ship[] x = utopiaPlanitia.generateShips(utopiaPlanitia.getNumOfPlayers());
 		
